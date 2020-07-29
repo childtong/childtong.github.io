@@ -7,7 +7,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.ico">
   <link rel="icon" type="image/png" href="/img/favicon.ico">
   <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
@@ -100,9 +100,9 @@
           
           
             <li class="nav-item">
-              <a class="nav-link" href="/categories/">
-                <i class="iconfont icon-category-fill"></i>
-                分类
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
               </a>
             </li>
           
@@ -171,6 +171,14 @@
   
 
   
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
   
 </div>
 
@@ -678,7 +686,8 @@ box-sizing: border-box; // IE盒模型标准</code></pre>
 <li>将你的原来的px数值除以10，然后换上em作为单位；</li>
 <li>重新计算那些被放大的字体的em数值。避免字体大小的重复声明。</li>
 </ul>
-<p><strong>REM（css3新增）</strong><br>使用rem相对的只是HTML根元素。集相对大小和绝对大小的优点于一身，通过它既可以做到只修改根元素就成比例地调整所有字体大小，又可以避免字体大小逐层复合的连锁反应。<br><strong>EX（不推荐）</strong></p>
+<p><strong>REM（css3新增）</strong><br>使用rem相对的只是HTML根元素。集相对大小和绝对大小的优点于一身，通过它既可以做到只修改根元素就成比例地调整所有字体大小，又可以避免字体大小逐层复合的连锁反应。</p>
+<p><strong>EX（不推荐）</strong></p>
 <ul>
 <li>ex 是一个相对长度单位，1ex 被定义为一种给定字体的小写字母 “x” 的高度。因此，这个值会随字体的不同而变化。</li>
 <li>然而，很多浏览器都没有内置 ex 高度值，只是简单的取 em 的值，再取其一半作为 ex 的值。所以，一般不推荐使用 ex 这个长度单位。<br>选择使用什么字体单位主要由你的项目来决定，如果你的用户群都使用最新版的浏览器，那推荐使用rem，如果要考虑兼容性，那就使用px,或者两者同时使用。</li>
@@ -771,6 +780,12 @@ background-color: rgba(0,0,0,0.2); //4只是背景色透明</code></pre>
                   <div class="post-next col-6">
                     
                     
+                      <a href="/2020/07/17/js-basic1/">
+                        <span class="hidden-mobile">从头梳理JS基础（一）数据类型及深浅拷贝</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
                   </div>
                 </div>
               
@@ -847,7 +862,7 @@ background-color: rgba(0,0,0,0.2); //4只是背景色透明</code></pre>
       order: 'random',
       theme: '#b7daff',
       preload: 'none',
-      audio: [{"name":"海底","artist":"三块木头","url":"/songs/三块木头 - 海底.mp3","cover":"/img/cover.jpg"},{"name":"ハレハレヤ（朗朗晴天）","artist":"猫瑾","url":"/songs/猫瑾 - ハレハレヤ（朗朗晴天）.mp3","cover":"/img/cover.jpg"},{"name":"ぼくら（城镇青年ED）","artist":"玖肆仟","url":"/songs/玖肆仟 - ぼくら（城镇青年ED）.mp3","cover":"/img/cover.jpg"}]
+      audio: [{"name":"海底","artist":"三块木头","url":"/songs/三块木头 - 海底.mp3","cover":"/img/cover.png"},{"name":"ハレハレヤ（朗朗晴天）","artist":"猫瑾","url":"/songs/猫瑾 - ハレハレヤ（朗朗晴天）.mp3","cover":"/img/cover.png"},{"name":"ぼくら（城镇青年ED）","artist":"玖肆仟","url":"/songs/玖肆仟 - ぼくら（城镇青年ED）.mp3","cover":"/img/cover.png"}]
     });
   }
 </script>
