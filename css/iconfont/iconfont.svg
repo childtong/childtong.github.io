@@ -1,0 +1,29 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" >
+<!--
+2013-9-30: Created.
+-->
+<svg>
+<metadata>
+Created by iconfont
+</metadata>
+<defs>
+
+<font id="iconfont" horiz-adv-x="1024" >
+  <font-face
+    font-family="iconfont"
+    font-weight="500"
+    font-stretch="normal"
+    units-per-em="1024"
+    ascent="896"
+    descent="-128"
+  />
+    <missing-glyph />
+    
+    <glyph glyph-name="juejin-logo" unicode="&#58880;" d="M600.737684 691.658105L512.458105 761.263158l-92.213894-72.730947-4.796632-3.853474 97.010526-77.338948 97.333895 77.338948-9.054316 6.979368z m334.551579-269.958737l-423.073684-333.608421-422.804211 333.41979L26.947368 371.334737l485.268211-382.625684 485.537684 382.841263-62.464 50.149052z m-423.073684-27.055157l-230.238316 181.517473-62.437052-50.149052 292.648421-230.777264 292.944842 230.992843-62.437053 50.149052-230.480842-181.733052z"  horiz-adv-x="1212" />
+
+    
+
+
+  </font>
+</defs></svg>
