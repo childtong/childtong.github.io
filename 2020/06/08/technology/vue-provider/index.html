@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="XuYuTong">
   <meta name="keywords" content="">
-  <title>Hello World - 芋头&#39;s Blog</title>
+  <title>vue组件通信--provide/inject - 芋头&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 
@@ -156,8 +156,8 @@
               
   <div class="mt-3 post-meta">
     <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-    <time datetime="2020-07-28 17:02">
-      2020年7月28日 下午
+    <time datetime="2020-06-08 10:00">
+      2020年6月8日 上午
     </time>
   </div>
 
@@ -167,7 +167,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      73 字
+      1.6k 字
     </span>
   
 
@@ -177,7 +177,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      2
+      37
        分钟
     </span>
   
@@ -216,25 +216,151 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><pre><code class="hljs bash">$ hexo new <span class="hljs-string">"My New Post"</span></code></pre>
+              <h2 id="前言："><a href="#前言：" class="headerlink" title="前言："></a>前言：</h2><p>之前在Vue中进行组件通信一般都会使用props，开始使用provide/inject是非常偶然的一次尝试。<br>当时在开发中需要实现祖孙组件，甚至祖祖祖祖孙组件之间的通信，在这种多层级场景下，props就显得太过累赘了，由于是进行设计器（插件）开发，为了提高插件的可复用性，减少不必要的包依赖，倾向于在不引入Vuex的情况下解决这个问题，那么就应该看看vue本身，是否具有这种能力，就在这个时候，我发现了provide/inject。</p>
+<h2 id="我们先来看看Vue官方的定义是什么："><a href="#我们先来看看Vue官方的定义是什么：" class="headerlink" title="我们先来看看Vue官方的定义是什么："></a>我们先来看看Vue官方的定义是什么：</h2><p><img src="http://note.youdao.com/yws/res/3837/WEBRESOURCE8aaa8269c294a376ba32fa631da1ee75#align=left&display=inline&height=475&margin=%5Bobject%20Object%5D&originHeight=703&originWidth=917&status=done&style=none&width=620" srcset="/img/loading.gif" alt=""><br>provide/inject 是 Vue 在 2.2.0 版本新增的 API，官网这段定义看起来好像有点难理解，通俗的讲，就是provide 可以在祖先组件中指定我们想要提供给后代组件的数据或方法，而在任何后代组件中，我们都可以使用 inject 来接收 provide 提供的数据或方法。</p>
+<h2 id="举个🌰："><a href="#举个🌰：" class="headerlink" title="举个🌰："></a>举个🌰：</h2><pre><code class="hljs javascript"><span class="hljs-comment">// 父级组件提供 'foo'</span>
+&lt;template&gt;
+  &lt;div&gt;
+    &lt;div&gt;&#123;&#123;foo&#125;&#125;&lt;<span class="hljs-regexp">/div&gt;</span>
+<span class="hljs-regexp">    &lt;son&gt;&lt;/</span>son&gt;
+  &lt;<span class="hljs-regexp">/div&gt;</span>
+<span class="hljs-regexp">&lt;/</span>template&gt;
 
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><pre><code class="hljs bash">$ hexo server</code></pre>
+&lt;script&gt;
+<span class="hljs-keyword">import</span> Son <span class="hljs-keyword">from</span> <span class="hljs-string">"./Son"</span>;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> &#123;
+  name: <span class="hljs-string">"parent"</span>,
+  components: &#123; Son &#125;,
+  provide() &#123;
+    <span class="hljs-keyword">return</span> &#123;
+      foo: <span class="hljs-keyword">this</span>.foo
+    &#125;;
+  &#125;,
+  data() &#123;
+    <span class="hljs-keyword">return</span> &#123;
+      foo: <span class="hljs-string">"测试"</span>,
+    &#125;;
+  &#125;，
+  mounted() &#123;
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>.foo)
+  &#125;,
+&#125;;
+&lt;<span class="hljs-regexp">/script&gt;</span>
+<span class="hljs-regexp"></span>
+<span class="hljs-regexp">/</span><span class="hljs-regexp">/子级组件，不接收</span>
+<span class="hljs-regexp">&lt;template&gt;</span>
+<span class="hljs-regexp">  &lt;grandSon&gt;&lt;/g</span>randSon&gt;
+&lt;<span class="hljs-regexp">/template&gt;</span>
+<span class="hljs-regexp"></span>
+<span class="hljs-regexp">&lt;script&gt;</span>
+<span class="hljs-regexp">import grandSon from "./g</span>randSon<span class="hljs-string">";</span>
+<span class="hljs-string">export default &#123;</span>
+<span class="hljs-string">  name: "</span>son<span class="hljs-string">",</span>
+<span class="hljs-string">  components: &#123; grandSon &#125;,</span>
+<span class="hljs-string">&#125;;</span>
+<span class="hljs-string">&lt;/script&gt;</span>
+<span class="hljs-string"></span>
+<span class="hljs-string">//孙级组件，接收foo</span>
+<span class="hljs-string">&lt;template&gt;</span>
+<span class="hljs-string">  &lt;div&gt;&#123;&#123;foo&#125;&#125;&lt;/div&gt;</span>
+<span class="hljs-string">&lt;/template&gt;</span>
+<span class="hljs-string"></span>
+<span class="hljs-string">&lt;script&gt;</span>
+<span class="hljs-string">export default &#123;</span>
+<span class="hljs-string">  name: "</span>grandSon<span class="hljs-string">",</span>
+<span class="hljs-string">  inject: ["</span>foo<span class="hljs-string">"],</span>
+<span class="hljs-string">  mounted() &#123;</span>
+<span class="hljs-string">    console.log(this.foo)</span>
+<span class="hljs-string">  &#125;,</span>
+<span class="hljs-string">&#125;;</span>
+<span class="hljs-string">&lt;/script&gt;</span></code></pre>
+<p>在这里我们可以发现孙组件越过子组件接收了父组件注入的数据，我们可以理解为爷爷越过爸爸偷偷给孙子买了冰激凌，这是一组最简单的用法，当层级继续增加时，仍可通过这种方式由父组件直接跨域多个层级向后代组件注入数据。<br>有一点需要特别注意的是，实际上我们可以将当前组件inject获取的数据直接赋值给它本身的data或props，不过官网提示我们，这是在Vue2.2.1版本才实现的功能，在这之前，必须先进行props和data数据的初始化。<br><img src="http://note.youdao.com/yws/res/3886/WEBRESOURCE81d3c0312bc39b56e0f5ff4fdba4dc6b#align=left&display=inline&height=72&margin=%5Bobject%20Object%5D&originHeight=100&originWidth=857&status=done&style=none&width=620" srcset="/img/loading.gif" alt=""></p>
+<h2 id="实现可响应的数据变化"><a href="#实现可响应的数据变化" class="headerlink" title="实现可响应的数据变化"></a>实现可响应的数据变化</h2><p>在尝试中我们发现，由于Vue的单向流关系，实际上如果在parent中改变了初始传入的foo的值以后，grandSon并不会得到改变后的值，也就是在这个时候，父孙组件的数据出现了不一致的情况，我们肯定是希望拿到的数据是一致的，怎么来解决这个问题呢，官网还有一句提示为我们提供了解释。<br><img src="http://note.youdao.com/yws/res/3911/WEBRESOURCEcff4660c1175a82fe1c03e986b6f3ed3#align=left&display=inline&height=69&margin=%5Bobject%20Object%5D&originHeight=97&originWidth=876&status=done&style=none&width=620" srcset="/img/loading.gif" alt=""><br>也就是指，我们需要人为的将这组数据关系变成可响应的，哦，我们之前的foo是一个字符串，基本数据类型是不具有响应特性的，那么，我们可能需要传递一个对象。</p>
+<h2 id="再举个🌰："><a href="#再举个🌰：" class="headerlink" title="再举个🌰："></a>再举个🌰：</h2><pre><code class="hljs javascript"><span class="hljs-comment">// 改造一下父级组件提供 'foo'</span>
+&lt;template&gt;
+  &lt;div&gt;
+    &lt;div&gt;&#123;&#123;foo&#125;&#125;&lt;<span class="hljs-regexp">/div&gt;</span>
+<span class="hljs-regexp">    &lt;son&gt;&lt;/</span>son&gt;
+  &lt;<span class="hljs-regexp">/div&gt;</span>
+<span class="hljs-regexp">&lt;/</span>template&gt;
 
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><pre><code class="hljs bash">$ hexo generate</code></pre>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><pre><code class="hljs bash">$ hexo deploy</code></pre>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html" target="_blank" rel="noopener">Deployment</a></p>
+&lt;script&gt;
+<span class="hljs-keyword">import</span> Son <span class="hljs-keyword">from</span> <span class="hljs-string">"./Son"</span>;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> &#123;
+  name: <span class="hljs-string">"parent"</span>,
+  components: &#123; Son &#125;,
+  provide() &#123;
+    <span class="hljs-keyword">return</span> &#123;
+      foo: <span class="hljs-keyword">this</span>.foo
+    &#125;;
+  &#125;,
+  data() &#123;
+    <span class="hljs-keyword">return</span> &#123;
+      foo: &#123;
+        foo: <span class="hljs-string">"测试"</span>
+      &#125;,,
+    &#125;;
+  &#125;，
+  mounted() &#123;
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>.foo)
+  &#125;,
+&#125;;
+&lt;<span class="hljs-regexp">/script&gt;</span></code></pre>
+<p>在这个栗子中，改造了一下父组件提供的数据，测试发现，foo变成了一组可响应的数据。经过尝试我发现在这种情况下如果在孙组件改变inject中foo的值，也会响应的更新到父组件中，当然为了保护单向数据流机制，最佳实践还是不要在子组件里更改inject（虽然 sync 也破坏了单向数据流）。</p>
+<h2 id="实现可响应的数据变化默认值设置"><a href="#实现可响应的数据变化默认值设置" class="headerlink" title="实现可响应的数据变化默认值设置"></a>实现可响应的数据变化默认值设置</h2><p><img src="http://note.youdao.com/yws/res/3944/WEBRESOURCEa1f2da7f56ea03e708af405a0c882d18#align=left&display=inline&height=79&margin=%5Bobject%20Object%5D&originHeight=79&originWidth=595&status=done&style=none&width=595" srcset="/img/loading.gif" alt=""></p>
+<pre><code class="hljs javascript">&lt;script&gt;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> &#123;
+  name: <span class="hljs-string">"grandSon"</span>,
+  inject: &#123;
+    foo: &#123;
+      <span class="hljs-keyword">from</span>: <span class="hljs-string">'bar'</span>,
+      <span class="hljs-keyword">default</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>]
+    &#125;
+  &#125;,
+  mounted() &#123;
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>.foo)
+  &#125;,
+&#125;;
+&lt;<span class="hljs-regexp">/script&gt;</span></code></pre>
+<p>在2.5.0 版本之后的版本中可以为inject提供默认值了，如果它需要从一个不同名字的 property 注入，则使用 from 来表示其源 property，与 prop 的默认值类似，需要对非原始值使用一个工厂方法。</p>
+<p>呱唧呱唧，那基本用法我们就讲到这里了，归根结底，既然provide/inject 这么方便，为什么 Vue 官方还要推荐我们使用 Vuex进行数据管理呢？</p>
+<h2 id="明显的缺点"><a href="#明显的缺点" class="headerlink" title="明显的缺点"></a>明显的缺点</h2><p>provide/inject 的缺点还是非常明显的</p>
+<ul>
+<li><p>当多个后代组件同时依赖同一个父组件提供数据时，只要任一组件对数据进行了修改，所有依赖的组件都会受到影响，实际上是增加了耦合度。</p>
+</li>
+<li><p>任意层级访问使数据追踪变的比较困难，你并不能准确的定位到是哪一个层级对数据进行了改变，当数据出现问题时，尤其是多人协作时，可能会大大增加问题定位的损耗。</p>
+<h2 id="值得肯定的优点"><a href="#值得肯定的优点" class="headerlink" title="值得肯定的优点"></a>值得肯定的优点</h2><p>万事万物都有把双刃剑，有缺点自然也有优点，在进行组件库或高级插件开发时，provide/inject 仍然是一个不错的选择。</p>
+<h2 id="留坑待补（慢慢完善。。。应当不会鸽）"><a href="#留坑待补（慢慢完善。。。应当不会鸽）" class="headerlink" title="留坑待补（慢慢完善。。。应当不会鸽）"></a>留坑待补（慢慢完善。。。应当不会鸽）</h2></li>
+<li><p>从Vue生命周期源码来看provide/inject的执行过程</p>
+</li>
+<li><p>插件/组件库应用实例（同样的功能实现与Vuex进行对比）</p>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>其实之前的笔记都是写给自己看的，这还是真正意义上的第一篇热乎乎的博客，emmm感觉还有些地方没有讲的很明白，也还留坑了一些内容后续会慢慢完善，输出真是不易的过程，不过会继续努力学习提高哒，有问题欢迎指出，会及时更正，奥里给！</p>
+<h2 id="最后的最后"><a href="#最后的最后" class="headerlink" title="最后的最后"></a>最后的最后</h2><p>给自己的小组卖个安利，欢迎热爱前端的小姐妹们加入我们，一起学习，共同进步【有意请留言或私信，社畜搬砖不及时，但看到会立刻回复】💗💗💗💗💗 </p>
+</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2020/png/1542493/1593750956877-159ea5d0-2e01-4902-9c6f-17129aeb2893.png#align=left&display=inline&height=637&margin=%5Bobject%20Object%5D&originHeight=637&originWidth=720&size=0&status=done&style=none&width=720#align=left&display=inline&height=637&margin=%5Bobject%20Object%5D&originHeight=637&originWidth=720&status=done&style=none&width=720" srcset="/img/loading.gif" alt=""></p>
 
             </article>
             <hr>
             <div>
               <div class="post-metas mb-3">
                 
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E6%8A%80%E6%9C%AFblog/">技术blog</a>
+                    
+                      <a class="hover-with-bg" href="/categories/%E6%8A%80%E6%9C%AFblog/Vue/">Vue</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Vue/">Vue</a>
+                    
+                  </div>
                 
               </div>
               
@@ -245,21 +371,15 @@
                   <div class="post-prev col-6">
                     
                     
-                      <a href="/2020/07/31/other/issue/">
+                      <a href="/2020/06/20/technology/promiseA+/">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">工具推荐</span>
+                        <span class="hidden-mobile">从 Promises/A+ 规范瞅一瞅 Promise</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </div>
                   <div class="post-next col-6">
                     
-                    
-                      <a href="/2020/07/28/technology/js-basic3/">
-                        <span class="hidden-mobile">从头梳理JS基础（三）原型，原型链与继承</span>
-                        <span class="visible-mobile">下一篇</span>
-                        <i class="iconfont icon-arrowright"></i>
-                      </a>
                     
                   </div>
                 </div>
@@ -451,7 +571,7 @@
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "Hello World&nbsp;",
+        "vue组件通信--provide/inject&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 70,
