@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.ico">
+  <link rel="icon" type="image/png" href="/img/favicon.ico">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#705a98">
+  <meta name="description" content="">
+  <meta name="author" content="XuYuTong">
+  <meta name="keywords" content="">
+  <title>芋头&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+  
+<link rel="stylesheet" href="/css/iconfont/iconfont.css">
+
+
+
+  <script  src="/js/utils.js" ></script>
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+
+<body>
+  <header style="height: 100vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>芋头's Blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+          </div>
+
+          
+            <div class="scroll-down-bar">
+              <i class="iconfont icon-arrowdown"></i>
+            </div>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      <div class="container nopadding-md">
+        <div class="py-5" id="board"
+          style=margin-top:0>
+          
+          <div class="container">
+            <div class="row">
+              <div class="col-12 col-md-10 m-auto">
+                
+
+
+  <div class="row mx-auto index-card">
+    
+    
+    <div class="col-12 col-md-12 mx-auto index-info">
+      <a class="index-header" href="/2021/06/10/technology/vue-cli3/">vue-cli3发布一个npm包（踩坑指南）</a>
+
+      <a href="/2021/06/10/technology/vue-cli3/" class="index-excerpt">
+        
+        
+          
+        
+        <div>前奏最近项目中做了一些工具组件，想着不如打成npm包，沉淀成基础能力，也方便后面其他的项目中使用，因着之前有过相关经验了，信心满满的开搞啦😀。结果dist包顺利的打出来一引用，emmm好像找不到export的组件【尴尬】。从头顺了一遍流程，没有问题，那么。。。偏差应当就在于“脚手架升级了！”，是了没错，现在都是用vue-cli3及以上的版本创建项目了，而上一次打npm好像还是在vue-cli2的</div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>&nbsp;2021-06-10
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E6%8A%80%E6%9C%AFblog/">技术blog</a>
+            
+              <a href="/categories/%E6%8A%80%E6%9C%AFblog/Vue/">Vue</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/Vue/">Vue</a>
+            
+          </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <div class="col-12 col-md-12 mx-auto index-info">
+      <a class="index-header" href="/2020/09/13/technology/eventloop/">Node.js VS 浏览器以及事件循环机制</a>
+
+      <a href="/2020/09/13/technology/eventloop/" class="index-excerpt">
+        
+        
+          
+        
+        <div>
+本文主要梳理node.js，浏览器相关及Event Loop事件循环等，会持续补充更新哦！首先我们要记住JS是一个单线程的语言。
+
+JS同步异步
+同步阻塞
+异步非阻塞：在涉及需要等待的操作，我们选择让程序继续运行，在等待时间结束的时候，通知一下我们的程序内容执行完毕，你可以操作这些资源了，这段等待时间并不影响你程序的继续执行，只是在未来的某个时间段（不确定），有一个操作一定会执行。
+
+JS的异步</div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>&nbsp;2020-09-13
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E6%8A%80%E6%9C%AFblog/">技术blog</a>
+            
+              <a href="/categories/%E6%8A%80%E6%9C%AFblog/JS/">JS</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/JS/">JS</a>
+            
+          </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <div class="col-12 col-md-12 mx-auto index-info">
+      <a class="index-header" href="/2020/07/31/hello-world/">Hello World</a>
+
+      <a href="/2020/07/31/hello-world/" class="index-excerpt">
+        
+        
+          
+        
+        <div>Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub.
+Quick</div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>&nbsp;2020-07-31
+          </div>
+        
+        
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <div class="col-12 col-md-12 mx-auto index-info">
+      <a class="index-header" href="/2020/07/31/other/issue/">工具推荐</a>
+
+      <a href="/2020/07/31/other/issue/" class="index-excerpt">
+        
+        
+          
+        
+        <div>视频播放器推荐：potplayer https://potplayer.daum.net/屏保推荐：filqlo  https://fliqlo.com/贴图软件推荐：snipaste  https://www.snipaste.com/解压缩软件推荐：bandzip  https://cn.bandisoft.com/bandizip/</div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>&nbsp;2020-07-31
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E6%9D%82%E4%B8%83%E6%9D%82%E5%85%AB/">杂七杂八</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/Other/">Other</a>
+            
+          </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2020/07/28/technology/js-basic3/" target="_self">
+          <img src="/img/ban/js-basic3.jpg" srcset="/img/loading.gif" alt="从头梳理JS基础（三）原型，原型链与继承">
+        </a>
+      </div>
+    
+    <div class="col-12 col-md-8 mx-auto index-info">
+      <a class="index-header" href="/2020/07/28/technology/js-basic3/">从头梳理JS基础（三）原型，原型链与继承</a>
+
+      <a href="/2020/07/28/technology/js-basic3/" class="index-excerpt">
+        
+        
+          
+        
+        <div>
+本文主要梳理JS 的原型，原型链，new运算及继承等，会持续补充更新哦！
+
+构造函数constructor 返回创建实例对象时构造函数的引用。此属性的值是对函数本身的引用，而不是一个包含函数名称的字符串。
+Symbol 是构造函数吗？Symbol是基本数据类型，但作为构造函数来说它并不完整，因为它不支持语法 new Symbol()，但其原型上拥有 constructor属性，即 Symbol.</div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>&nbsp;2020-07-28
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E6%8A%80%E6%9C%AFblog/">技术blog</a>
+            
+              <a href="/categories/%E6%8A%80%E6%9C%AFblog/JS/">JS</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/JS/">JS</a>
+            
+          </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2020/07/20/technology/css-basic/" target="_self">
+          <img src="/img/ban/css-basic.jpg" srcset="/img/loading.gif" alt="一文梳理CSS必会知识点">
+        </a>
+      </div>
+    
+    <div class="col-12 col-md-8 mx-auto index-info">
+      <a class="index-header" href="/2020/07/20/technology/css-basic/">一文梳理CSS必会知识点</a>
+
+      <a href="/2020/07/20/technology/css-basic/" class="index-excerpt">
+        
+        
+          
+        
+        <div>
+本文主要梳理CSS必会知识点，会持续补充更新哦！万字长文预警！这可能是目前最长的一篇了🙈🙉🙊
+
+CSS引入有哪些引入方式？通过link和@import引入有什么区别？（*）
+CSS引入方式有4种 内联、内嵌、外链、导入
+外链 link 除了可以加载css之外,还可以定义rss、rel等属性，没有兼容性问题，支持使用javascript改变样式
+导入[@import ] 是css提供的，只能</div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>&nbsp;2020-07-20
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E6%8A%80%E6%9C%AFblog/">技术blog</a>
+            
+              <a href="/categories/%E6%8A%80%E6%9C%AFblog/CSS/">CSS</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/CSS/">CSS</a>
+            
+          </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2020/07/17/technology/js-basic1/" target="_self">
+          <img src="/img/ban/js-basic1.jpg" srcset="/img/loading.gif" alt="从头梳理JS基础（一）数据类型及深浅拷贝">
+        </a>
+      </div>
+    
+    <div class="col-12 col-md-8 mx-auto index-info">
+      <a class="index-header" href="/2020/07/17/technology/js-basic1/">从头梳理JS基础（一）数据类型及深浅拷贝</a>
+
+      <a href="/2020/07/17/technology/js-basic1/" class="index-excerpt">
+        
+        
+          
+        
+        <div>前言这个系列呢，说是博客其实就是笔记哈哈哈哈，感觉上班久了以后很多基础的东西反而不那么扎实了，也是进行一个梳理吧，站在巨人的肩膀上加一些自己的理解【虽然可能我会把自己绕进去，这不重要 🙈】，但我会努力讲明白哒 😘
+
+本文主要梳理JS的基本数据类型和引用数据类型，显隐式转换规则及深浅拷贝，会持续补充更新哦！
+
+数据存储结构先来看看三种常见的数据存储结构：
+
+栈：只允许在一段进行插入或者删除操作的</div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>&nbsp;2020-07-17
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E6%8A%80%E6%9C%AFblog/">技术blog</a>
+            
+              <a href="/categories/%E6%8A%80%E6%9C%AFblog/JS/">JS</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/JS/">JS</a>
+            
+          </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2020/07/14/technology/js-basic2/" target="_self">
+          <img src="/img/ban/js-basic2.jpg" srcset="/img/loading.gif" alt="从头梳理JS基础（二）函数执行的整个过程">
+        </a>
+      </div>
+    
+    <div class="col-12 col-md-8 mx-auto index-info">
+      <a class="index-header" href="/2020/07/14/technology/js-basic2/">从头梳理JS基础（二）函数执行的整个过程</a>
+
+      <a href="/2020/07/14/technology/js-basic2/" class="index-excerpt">
+        
+        
+          
+        
+        <div>
+本文主要梳理JS 函数执行的整个过程，包括执行上下文，作用域链，内存空间，闭包，this指向和call，apply，bind等，会持续补充更新哦！
+
+执行上下文评估和执行 JavaScript 代码的环境的抽象概念。
+
+全局执行上下文— 这是默认或者说基础的上下文，任何不在函数内部的代码都在全局上下文中（一个程序中只会有一个全局执行上下文）。
+函数执行上下文 — 每当一个函数被调用时, 都会为该</div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>&nbsp;2020-07-14
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E6%8A%80%E6%9C%AFblog/">技术blog</a>
+            
+              <a href="/categories/%E6%8A%80%E6%9C%AFblog/JS/">JS</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/JS/">JS</a>
+            
+          </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2020/06/20/technology/promiseA+/" target="_self">
+          <img src="/img/ban/promiseA+.jpg" srcset="/img/loading.gif" alt="从 Promises/A+ 规范瞅一瞅 Promise">
+        </a>
+      </div>
+    
+    <div class="col-12 col-md-8 mx-auto index-info">
+      <a class="index-header" href="/2020/06/20/technology/promiseA+/">从 Promises/A+ 规范瞅一瞅 Promise</a>
+
+      <a href="/2020/06/20/technology/promiseA+/" class="index-excerpt">
+        
+        
+          
+        
+        <div>
+先进行一些基本的概念梳理：
+
+什么是 Promise？Promise 是异步编程的一种解决方案：从语法上讲，Promise是一个对象，它可以获取异步操作的消息；从本意上讲，它是承诺，承诺它过一段时间会给你一个结果。
+Promise 可以解决什么问题？
+回调地狱，代码难以维护， 常常第一个的函数的输出是第二个函数的输入这种现象
+
+当异步场景越来越多的时候，代码会横向发展（变宽），依赖的层级逐渐变多</div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>&nbsp;2020-06-20
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E6%8A%80%E6%9C%AFblog/">技术blog</a>
+            
+              <a href="/categories/%E6%8A%80%E6%9C%AFblog/ES6/">ES6</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/ES6/">ES6</a>
+            
+          </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2020/06/08/technology/vue-provider/" target="_self">
+          <img src="/img/ban/vue-provider.jpg" srcset="/img/loading.gif" alt="vue组件通信--provide/inject">
+        </a>
+      </div>
+    
+    <div class="col-12 col-md-8 mx-auto index-info">
+      <a class="index-header" href="/2020/06/08/technology/vue-provider/">vue组件通信--provide/inject</a>
+
+      <a href="/2020/06/08/technology/vue-provider/" class="index-excerpt">
+        
+        
+          
+        
+        <div>前言：之前在Vue中进行组件通信一般都会使用props，开始使用provide/inject是非常偶然的一次尝试。当时在开发中需要实现祖孙组件，甚至祖祖祖祖孙组件之间的通信，在这种多层级场景下，props就显得太过累赘了，由于是进行设计器（插件）开发，为了提高插件的可复用性，减少不必要的包依赖，倾向于在不引入Vuex的情况下解决这个问题，那么就应该看看vue本身，是否具有这种能力，就在这个时候，我</div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>&nbsp;2020-06-08
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E6%8A%80%E6%9C%AFblog/">技术blog</a>
+            
+              <a href="/categories/%E6%8A%80%E6%9C%AFblog/Vue/">Vue</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/Vue/">Vue</a>
+            
+          </div>
+        
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+    <!-- APlayer 音乐播放器 -->
+    <div id="aplayer"></div>
+    <script defer src="https://cdn.staticfile.org/aplayer/1.10.1/APlayer.min.js" ></script>
+<link  rel="stylesheet" href="https://cdn.staticfile.org/aplayer/1.10.1/APlayer.min.css" />
+<script type="text/javascript">
+  var oldLoadAp = window.onload;
+  window.onload = function () {
+    oldLoadAp && oldLoadAp();
+
+    new APlayer({
+      container: document.getElementById('aplayer'),
+      fixed: true,
+      autoplay: 'false' === 'true',
+      loop: 'all',
+      order: 'random',
+      theme: '#b7daff',
+      preload: 'none',
+      audio: [{"name":"海底","artist":"三块木头","url":"/songs/三块木头 - 海底.mp3","cover":"/img/cover.png"},{"name":"ハレハレヤ（朗朗晴天）","artist":"猫瑾","url":"/songs/猫瑾 - ハレハレヤ（朗朗晴天）.mp3","cover":"/img/cover.png"},{"name":"ぼくら（城镇青年ED）","artist":"玖肆仟","url":"/songs/玖肆仟 - ぼくら（城镇青年ED）.mp3","cover":"/img/cover.png"}]
+    });
+  }
+</script>
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <span>&</span>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+      <i class="iconfont icon-love"></i>
+      <span>by 芋头</span>
+      <!-- <span id="hitokoto">:D 获取中...</span> -->
+    </div>
+    <div>
+      <span id="timeDate">载入天数...</span>
+      <span id="times">载入时分秒...</span>
+    </div>
+    
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/main.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "欢迎观临 我的快乐&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+  // fetch('https://v1.hitokoto.cn')
+  //   .then(response => response.json())
+  //   .then(data => {
+  //     const hitokoto = document.getElementById('hitokoto')
+  //     hitokoto.innerText = data.hitokoto
+  //   })
+  //   .catch(console.error)
+  var now = new Date();
+  function createtime() {
+    var grt = new Date("07/28/2020 00:00:00");//此处修改你的建站时间或者网站上线时间
+    now.setTime(now.getTime() + 250);
+    days = (now - grt) / 1000 / 60 / 60 / 24;
+    dnum = Math.floor(days);
+    hours = (now - grt) / 1000 / 60 / 60 - (24 * dnum);
+    hnum = Math.floor(hours);
+    if (String(hnum).length == 1) {
+      hnum = "0" + hnum;
+    }
+    minutes = (now - grt) / 1000 / 60 - (24 * 60 * dnum) - (60 * hnum);
+    mnum = Math.floor(minutes);
+    if (String(mnum).length == 1) {
+      mnum = "0" + mnum;
+    }
+    seconds = (now - grt) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+    snum = Math.round(seconds);
+    if (String(snum).length == 1) {
+      snum = "0" + snum;
+    }
+    document.getElementById("timeDate").innerHTML = "按时长大的第&nbsp" + dnum + "&nbsp天";
+    document.getElementById("times").innerHTML = hnum + "&nbsp小时&nbsp" + mnum + "&nbsp分&nbsp" + snum + "&nbsp秒";
+  }
+  setInterval("createtime()", 250);
+</script>
+
+</body>
+</html>

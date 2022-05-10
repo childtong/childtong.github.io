@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.ico">
+  <link rel="icon" type="image/png" href="/img/favicon.ico">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#705a98">
+  <meta name="description" content="">
+  <meta name="author" content="XuYuTong">
+  <meta name="keywords" content="">
+  <title>从头梳理JS基础（三）原型，原型链与继承 - 芋头&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+  
+
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+  
+<link rel="stylesheet" href="/css/iconfont/iconfont.css">
+
+
+
+  <script  src="/js/utils.js" ></script>
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>芋头's Blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+  <div class="mt-3 post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2020-07-28 10:00">
+      2020年7月28日 上午
+    </time>
+  </div>
+
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.1k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      49
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <blockquote>
+<p>本文主要梳理JS 的原型，原型链，new运算及继承等，会持续补充更新哦！</p>
+</blockquote>
+<h2 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h2><p><strong>constructor</strong> 返回创建实例对象时构造函数的引用。此属性的值是对函数本身的引用，而不是一个包含函数名称的字符串。</p>
+<h3 id="Symbol-是构造函数吗？"><a href="#Symbol-是构造函数吗？" class="headerlink" title="Symbol 是构造函数吗？"></a>Symbol 是构造函数吗？</h3><p><strong>Symbol</strong>是基本数据类型，但作为构造函数来说它并不完整，因为它不支持语法 <strong>new Symbol()</strong>，但其原型上拥有 <strong>constructor</strong>属性，即 <strong>Symbol.prototype.constructor</strong>。Chrome 认为其不是构造函数，如果要生成实例直接使用 <strong>Symbol()</strong>即可。</p>
+<h3 id="constructor-值只读吗？"><a href="#constructor-值只读吗？" class="headerlink" title="constructor 值只读吗？"></a>constructor 值只读吗？</h3><p>对于引用类型来说 <strong>constructor **属性值是可以修改的，但是对于基本类型来说是只读的，创建他们的是只读的原生构造函数（</strong>native constructors<strong>），当然 *<em>null *</em>和 *<em>undefined *</em>是没有 **constructor</strong> 属性的。</p>
+<h2 id="原型"><a href="#原型" class="headerlink" title="原型"></a>原型</h2><p><img src="http://note.youdao.com/yws/res/1500/WEBRESOURCEa8ca6b275d004664d09b4a5d52fcb741#align=left&display=inline&height=303&margin=%5Bobject%20Object%5D&originHeight=484&originWidth=992&status=done&style=none&width=620" srcset="/img/loading.gif" alt=""></p>
+<ul>
+<li><p>Parent 对象有一个原型对象 <strong>Parent.prototype</strong>，其上有两个属性，分别是 <strong>constructor</strong> 和 <strong><strong>proto</strong></strong>，其中 <strong>proto</strong> （访问器属性）已被弃用，推荐使用 Object.getPrototypeOf()。</p>
+</li>
+<li><p><strong><strong>proto</strong></strong> 是每个实例上都有的属性，<strong>prototype</strong> 是构造函数的属性，这两个并不一样，但 p.<strong>proto</strong> 和 Parent.prototype 指向同一个对象。</p>
+<h2 id="原型链"><a href="#原型链" class="headerlink" title="原型链"></a>原型链</h2><p>每个对象拥有一个原型对象，通过 <strong><strong>proto</strong></strong>指针指向上一个原型 ，并从中继承方法和属性，同时原型对象也可能拥有原型，这样一层一层，最终指向 <strong>null</strong>。</p>
+</li>
+<li><p>每个对象都有<strong><strong>proto</strong></strong> 属性，但只有函数对象才有 <strong>prototype *<em>属性(但 *</em>Function.prototype</strong> 除外，它是函数对象，但它很特殊，他没有<strong>prototype</strong>属性)</p>
+</li>
+<li><p>原型对象（<strong>Person.prototype</strong>）是 构造函数（<strong>Person</strong>）的一个实例。</p>
+</li>
+<li><p>所有的构造器都来自于 <strong>Function.prototype</strong>，甚至包括根构造器<strong>Object</strong>及<strong>Function</strong>自身。所有构造器都继承了<strong>Function.prototype</strong>·的属性及方法。如<strong>length、call、apply、bind</strong></p>
+</li>
+<li><p>所有的构造器也都是一个普通 JS 对象，可以给构造器添加/删除属性等。同时它也继承了<strong>Object.prototype</strong>上的所有方法：<strong>toString、valueOf、hasOwnProperty</strong>等。</p>
+</li>
+<li><p>所有函数对象<strong>proto</strong>都指向<strong>Function.prototype</strong>，它是一个空函数<strong>Empty function</strong></p>
+</li>
+<li><p><strong>Object.getOwnPropertyNames,</strong>获取所有（包括不可枚举的属性）的属性名不包括 *<em>prototy *</em>中的属性，返回一个数组</p>
+</li>
+<li><p>如果要创建一个新对象，同时继承另一个对象的 [[Prototype]] ，推荐使用 <strong>Object.create()</strong>。</p>
+</li>
+<li><p>原型和原型链是JS实现继承的一种模型。</p>
+</li>
+<li><p>原型链的形成是真正是靠<strong><strong>proto</strong></strong> 而非<strong>prototype</strong></p>
+<pre><code class="hljs javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Person</span>(<span class="hljs-params"></span>)</span>&#123;&#125; 
+<span class="hljs-keyword">var</span> person1 = <span class="hljs-keyword">new</span> Person(); 
+<span class="hljs-built_in">console</span>.log(person1.__proto__ === Person.prototype); <span class="hljs-comment">// true </span>
+<span class="hljs-built_in">console</span>.log(Person.prototype.__proto__ === <span class="hljs-built_in">Object</span>.prototype) <span class="hljs-comment">//true </span>
+<span class="hljs-built_in">console</span>.log(<span class="hljs-built_in">Object</span>.prototype.__proto__) <span class="hljs-comment">//null </span>
+Person.__proto__ == <span class="hljs-built_in">Function</span>.prototype; <span class="hljs-comment">//true </span>
+<span class="hljs-built_in">Object</span>.__proto__ === <span class="hljs-built_in">Function</span>.prototype <span class="hljs-comment">// true </span>
+<span class="hljs-built_in">Function</span>.__proto__ === <span class="hljs-built_in">Function</span>.prototype <span class="hljs-comment">// true </span>
+<span class="hljs-built_in">Function</span>.prototype.__proto__ === <span class="hljs-built_in">Object</span>.prototype <span class="hljs-comment">//true </span>
+<span class="hljs-built_in">console</span>.log(<span class="hljs-built_in">Function</span>.prototype)<span class="hljs-comment">// function()&#123;&#125; (空函数) </span>
+
+<span class="hljs-keyword">var</span> num = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>() 
+<span class="hljs-built_in">console</span>.log(num.__proto__ == <span class="hljs-built_in">Array</span>.prototype) <span class="hljs-comment">// true </span>
+<span class="hljs-built_in">console</span>.log( <span class="hljs-built_in">Array</span>.prototype.__proto__ == <span class="hljs-built_in">Object</span>.prototype) <span class="hljs-comment">// true </span>
+<span class="hljs-built_in">console</span>.log(<span class="hljs-built_in">Array</span>.prototype) <span class="hljs-comment">// [] (空数组) </span>
+<span class="hljs-built_in">console</span>.log(<span class="hljs-built_in">Object</span>.prototype.__proto__) <span class="hljs-comment">//null </span>
+<span class="hljs-built_in">console</span>.log(<span class="hljs-built_in">Array</span>.__proto__ == <span class="hljs-built_in">Function</span>.prototype)<span class="hljs-comment">// true</span></code></pre>
+
+
+</li>
+</ul>
+<h2 id="New运算符"><a href="#New运算符" class="headerlink" title="New运算符"></a>New运算符</h2><blockquote>
+<p><strong>new 运算符</strong>创建一个用户定义的对象类型的实例或具有构造函数的内置对象的实例。 ——（MDN）</p>
+</blockquote>
+<h3 id="new一个对象过程发生了什么？"><a href="#new一个对象过程发生了什么？" class="headerlink" title="new一个对象过程发生了什么？"></a>new一个对象过程发生了什么？</h3><ul>
+<li>创建了一个全新的对象。(可以访问到构造函数和原型里的属性)</li>
+<li>这个对象会被执行[[Prototype]]（也就是<strong>proto</strong>）链接。</li>
+<li>生成的新对象会绑定到函数调用的this。</li>
+<li>通过new创建的每个对象将最终被[[Prototype]]链接到这个函数的prototype对象上。</li>
+<li>如果函数没有返回对象类型Object(包含Functoin, Array, Date, RegExg, Error)，那么new表达式中的函数调用会自动返回这个新的对象。</li>
+</ul>
+<h3 id="模拟一个new"><a href="#模拟一个new" class="headerlink" title="模拟一个new"></a><strong>模拟一个new</strong></h3><pre><code class="hljs javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">objectFactory</span>(<span class="hljs-params"></span>) </span>&#123;
+    Constructor = [].shift.call(<span class="hljs-built_in">arguments</span>);<span class="hljs-comment">//取得外部传入的构造器</span>
+    <span class="hljs-comment">//var obj = &#123;&#125;  // 创建一个空对象</span>
+    <span class="hljs-comment">//var obj = new Object(),//从Object.prototype上克隆一个对象</span>
+    <span class="hljs-comment">//obj.__proto__ = Constructor.prototype;</span>
+    <span class="hljs-keyword">var</span> obj = <span class="hljs-built_in">Object</span>.create(Constructor.prototype);
+    <span class="hljs-comment">// var F = function () &#123; &#125;;</span>
+    <span class="hljs-comment">// F.prototype = Constructor.prototype;</span>
+    <span class="hljs-comment">// obj = new F();//指向正确的原型</span>
+
+    <span class="hljs-keyword">var</span> ret = Constructor.apply(obj, <span class="hljs-built_in">arguments</span>);<span class="hljs-comment">//借用外部传入的构造器给obj设置属性</span>
+
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">typeof</span> ret === <span class="hljs-string">'object'</span> ? ret||obj : obj;<span class="hljs-comment">//确保构造器总是返回一个对象</span>
+
+&#125;;</code></pre>
+<h2 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h2><p>一个在构造函数上常用的规则是，用于复用的成员（译注：属性和方法）应该被添加到原型上。<br>代码复用才是目标，继承只是达成这个目标的一种手段。</p>
+<h3 id="1、原型链继承"><a href="#1、原型链继承" class="headerlink" title="1、原型链继承"></a>1、原型链继承</h3><p>重写原型对象，代之以一个新类型的实例。<br>缺点：</p>
+<ul>
+<li>多个实例对引用类型的操作会被篡改。</li>
+<li>在创建实例时，不能向SuperType传参<pre><code class="hljs javascript">SubType.prototype = <span class="hljs-keyword">new</span> SuperType();</code></pre>
+
+</li>
+</ul>
+<h3 id="2、借用构造函数继承（经典继承）"><a href="#2、借用构造函数继承（经典继承）" class="headerlink" title="2、借用构造函数继承（经典继承）"></a>2、借用构造函数继承（经典继承）</h3><p>使用父类的构造函数来增强子类实例，等同于复制父类的实例给子类（不使用原型）</p>
+<pre><code class="hljs javascript">SuperType.call(<span class="hljs-keyword">this</span>);</code></pre>
+<p>缺点：</p>
+<ul>
+<li>只能继承父类的实例属性和方法，不能继承原型属性/方法</li>
+<li>无法实现复用，每个子类都有父类实例函数的副本，影响性能</li>
+</ul>
+<h3 id="3、组合继承"><a href="#3、组合继承" class="headerlink" title="3、组合继承"></a>3、组合继承</h3><p>原型链继承和经典继承双剑合璧。<br>缺点：在使用子类创建实例对象时，其原型中会存在两份相同的属性/方法。</p>
+<h3 id="4、原型式继承"><a href="#4、原型式继承" class="headerlink" title="4、原型式继承"></a>4、原型式继承</h3><p>利用一个空对象作为中介，将某个对象直接赋值给空对象构造函数的原型。</p>
+<pre><code class="hljs javascript"><span class="hljs-keyword">var</span> SubType = <span class="hljs-built_in">Object</span>.create(SuperType);</code></pre>
+<p>缺点：</p>
+<ul>
+<li>原型链继承多个实例的引用类型属性指向相同，存在篡改的可能。</li>
+<li>无法传递参数</li>
+</ul>
+<h3 id="5、寄生式继承"><a href="#5、寄生式继承" class="headerlink" title="5、寄生式继承"></a>5、寄生式继承</h3><p>在原型式继承的基础上，增强对象，返回构造函数（为构造函数新增属性和方法，以增强函数）<br>缺点：跟借用构造函数模式一样，每次创建对象都会创建一遍方法。</p>
+<h3 id="6、寄生组合式继承"><a href="#6、寄生组合式继承" class="headerlink" title="6、寄生组合式继承"></a>6、寄生组合式继承</h3><pre><code class="hljs javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">inheritPrototype</span>(<span class="hljs-params">subType, superType</span>)</span>&#123;
+  <span class="hljs-keyword">var</span> prototype = <span class="hljs-built_in">Object</span>.create(superType.prototype); <span class="hljs-comment">// 创建对象，创建父类原型的一个副本</span>
+  prototype.constructor = subType;                    <span class="hljs-comment">// 增强对象，弥补因重写原型而失去的默认的constructor 属性</span>
+  subType.prototype = prototype;                      <span class="hljs-comment">// 指定对象，将新创建的对象赋值给子类的原型</span>
+&#125;
+
+<span class="hljs-comment">// 父类初始化实例属性和原型属性</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SuperType</span>(<span class="hljs-params">name</span>)</span>&#123;
+  <span class="hljs-keyword">this</span>.name = name;
+  <span class="hljs-keyword">this</span>.colors = [<span class="hljs-string">"red"</span>, <span class="hljs-string">"blue"</span>, <span class="hljs-string">"green"</span>];
+&#125;
+SuperType.prototype.sayName = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;
+  alert(<span class="hljs-keyword">this</span>.name);
+&#125;;
+
+<span class="hljs-comment">// 借用构造函数传递增强子类实例属性（支持传参和避免篡改）</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SubType</span>(<span class="hljs-params">name, age</span>)</span>&#123;
+  SuperType.call(<span class="hljs-keyword">this</span>, name);
+  <span class="hljs-keyword">this</span>.age = age;
+&#125;
+
+<span class="hljs-comment">// 将父类原型指向子类</span>
+inheritPrototype(SubType, SuperType);
+
+<span class="hljs-comment">// 新增子类原型属性</span>
+SubType.prototype.sayAge = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;
+  alert(<span class="hljs-keyword">this</span>.age);
+&#125;
+
+<span class="hljs-keyword">var</span> instance1 = <span class="hljs-keyword">new</span> SubType(<span class="hljs-string">"xyc"</span>, <span class="hljs-number">23</span>);
+<span class="hljs-keyword">var</span> instance2 = <span class="hljs-keyword">new</span> SubType(<span class="hljs-string">"lxy"</span>, <span class="hljs-number">23</span>);
+
+instance1.colors.push(<span class="hljs-string">"2"</span>); <span class="hljs-comment">// ["red", "blue", "green", "2"]</span>
+instance1.colors.push(<span class="hljs-string">"3"</span>); <span class="hljs-comment">// ["red", "blue", "green", "3"]</span></code></pre>
+<p><strong>这是最成熟的方法，也是现在库实现的方法</strong></p>
+<h3 id="7、混入继承多个对象"><a href="#7、混入继承多个对象" class="headerlink" title="7、混入继承多个对象"></a>7、混入继承多个对象</h3><p>混元（Mix-ins），任意多数量的对象中复制属性，然后将它们混在一起组成一个新对象</p>
+<pre><code class="hljs javascript"><span class="hljs-comment">// 混合其它 </span>
+<span class="hljs-built_in">Object</span>.assign(MyClass.prototype, OtherSuperClass.prototype);</code></pre>
+<p>Object.assign会把 OtherSuperClass原型上的函数拷贝到 MyClass原型上，使 MyClass 的所有实例都可用 OtherSuperClass 的方法。</p>
+<h3 id="8、ES6类继承extends"><a href="#8、ES6类继承extends" class="headerlink" title="8、ES6类继承extends"></a>8、ES6类继承extends</h3><p>复制属性继承-浅拷贝，深拷贝-extend</p>
+<h2 id="问几个问题"><a href="#问几个问题" class="headerlink" title="问几个问题"></a>问几个问题</h2><h3 id="Q1-函数声明和类声明的区别？"><a href="#Q1-函数声明和类声明的区别？" class="headerlink" title="Q1:函数声明和类声明的区别？"></a><strong>Q1:函数声明和类声明的区别？</strong></h3><p>函数声明会提升，类声明不会。首先需要声明你的类，然后访问它，否则像下面的代码会抛出一个ReferenceError。</p>
+<h3 id="Q2-ES5继承和ES6继承的区别？"><a href="#Q2-ES5继承和ES6继承的区别？" class="headerlink" title="Q2:ES5继承和ES6继承的区别？"></a><strong>Q2:ES5继承和ES6继承的区别？</strong></h3><ul>
+<li>ES5的继承实质上是先创建子类的实例对象，然后再将父类的方法添加到this上（Parent.call(this)）.</li>
+<li>ES6的继承有所不同，实质上是先创建父类的实例对象this，然后再用子类的构造函数修改this。因为子类没有自己的this对象，所以必须先调用父类的super()方法，否则新建实例报错。</li>
+</ul>
+<h2 id="巨人的肩膀"><a href="#巨人的肩膀" class="headerlink" title="巨人的肩膀"></a>巨人的肩膀</h2><ul>
+<li><a href="https://book.douban.com/subject/10546125/" target="_blank" rel="noopener"><strong>《JavaScript高级程序设计(第3版)》</strong></a></li>
+<li><a href="https://github.com/mqyqingfeng/Blog" target="_blank" rel="noopener"><strong>冴羽JavaScript深入系列15篇</strong></a></li>
+<li><a href="https://www.muyiy.cn/blog/5/5.1.html" target="_blank" rel="noopener"><strong>木易杨前端进阶-第 5 期：原型 Prototype</strong></a></li>
+<li><a href="https://juejin.im/post/5bcb2e295188255c55472db0" target="_blank" rel="noopener"><strong>JavaScript常用八种继承方案</strong></a></li>
+<li><a href="https://www.jianshu.com/p/dee9f8b14771" target="_blank" rel="noopener"><strong>最详尽的 JS 原型与原型链终极详解，没有「可能是」。（一）</strong></a></li>
+<li><a href="https://www.jianshu.com/p/652991a67186" target="_blank" rel="noopener"><strong>最详尽的 JS 原型与原型链终极详解，没有「可能是」。（二）</strong></a></li>
+<li><a href="https://www.jianshu.com/p/a4e1e7b6f4f8" target="_blank" rel="noopener"><strong>最详尽的 JS 原型与原型链终极详解，没有「可能是」。（三）</strong></a></li>
+<li><a href="https://github.com/jayli/javascript-patterns/blob/master/chapter6.markdown" target="_blank" rel="noopener"><strong>代码复用模式</strong></a></li>
+</ul>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a><strong>最后</strong></h2><p>欢迎纠错，看到会及时修改哒！❤<br>温故而知新，希望我们都可以保持本心，念念不忘，必有回响。</p>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E6%8A%80%E6%9C%AFblog/">技术blog</a>
+                    
+                      <a class="hover-with-bg" href="/categories/%E6%8A%80%E6%9C%AFblog/JS/">JS</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/JS/">JS</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" target="_blank" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/07/31/other/issue/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">工具推荐</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/2020/07/20/technology/css-basic/">
+                        <span class="hidden-mobile">一文梳理CSS必会知识点</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+    <!-- APlayer 音乐播放器 -->
+    <div id="aplayer"></div>
+    <script defer src="https://cdn.staticfile.org/aplayer/1.10.1/APlayer.min.js" ></script>
+<link  rel="stylesheet" href="https://cdn.staticfile.org/aplayer/1.10.1/APlayer.min.css" />
+<script type="text/javascript">
+  var oldLoadAp = window.onload;
+  window.onload = function () {
+    oldLoadAp && oldLoadAp();
+
+    new APlayer({
+      container: document.getElementById('aplayer'),
+      fixed: true,
+      autoplay: 'false' === 'true',
+      loop: 'all',
+      order: 'random',
+      theme: '#b7daff',
+      preload: 'none',
+      audio: [{"name":"海底","artist":"三块木头","url":"/songs/三块木头 - 海底.mp3","cover":"/img/cover.png"},{"name":"ハレハレヤ（朗朗晴天）","artist":"猫瑾","url":"/songs/猫瑾 - ハレハレヤ（朗朗晴天）.mp3","cover":"/img/cover.png"},{"name":"ぼくら（城镇青年ED）","artist":"玖肆仟","url":"/songs/玖肆仟 - ぼくら（城镇青年ED）.mp3","cover":"/img/cover.png"}]
+    });
+  }
+</script>
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <span>&</span>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+      <i class="iconfont icon-love"></i>
+      <span>by 芋头</span>
+      <!-- <span id="hitokoto">:D 获取中...</span> -->
+    </div>
+    <div>
+      <span id="timeDate">载入天数...</span>
+      <span id="times">载入时分秒...</span>
+    </div>
+    
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/main.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: 'article.markdown-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "从头梳理JS基础（三）原型，原型链与继承&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+  // fetch('https://v1.hitokoto.cn')
+  //   .then(response => response.json())
+  //   .then(data => {
+  //     const hitokoto = document.getElementById('hitokoto')
+  //     hitokoto.innerText = data.hitokoto
+  //   })
+  //   .catch(console.error)
+  var now = new Date();
+  function createtime() {
+    var grt = new Date("07/28/2020 00:00:00");//此处修改你的建站时间或者网站上线时间
+    now.setTime(now.getTime() + 250);
+    days = (now - grt) / 1000 / 60 / 60 / 24;
+    dnum = Math.floor(days);
+    hours = (now - grt) / 1000 / 60 / 60 - (24 * dnum);
+    hnum = Math.floor(hours);
+    if (String(hnum).length == 1) {
+      hnum = "0" + hnum;
+    }
+    minutes = (now - grt) / 1000 / 60 - (24 * 60 * dnum) - (60 * hnum);
+    mnum = Math.floor(minutes);
+    if (String(mnum).length == 1) {
+      mnum = "0" + mnum;
+    }
+    seconds = (now - grt) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+    snum = Math.round(seconds);
+    if (String(snum).length == 1) {
+      snum = "0" + snum;
+    }
+    document.getElementById("timeDate").innerHTML = "按时长大的第&nbsp" + dnum + "&nbsp天";
+    document.getElementById("times").innerHTML = hnum + "&nbsp小时&nbsp" + mnum + "&nbsp分&nbsp" + snum + "&nbsp秒";
+  }
+  setInterval("createtime()", 250);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.ico">
+  <link rel="icon" type="image/png" href="/img/favicon.ico">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#705a98">
+  <meta name="description" content="">
+  <meta name="author" content="XuYuTong">
+  <meta name="keywords" content="">
+  <title>从头梳理JS基础（二）函数执行的整个过程 - 芋头&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+  
+
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+  
+<link rel="stylesheet" href="/css/iconfont/iconfont.css">
+
+
+
+  <script  src="/js/utils.js" ></script>
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>芋头's Blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+  <div class="mt-3 post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2020-07-14 10:00">
+      2020年7月14日 上午
+    </time>
+  </div>
+
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      4.6k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      107
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <blockquote>
+<p>本文主要梳理JS 函数执行的整个过程，包括执行上下文，作用域链，内存空间，闭包，this指向和call，apply，bind等，会持续补充更新哦！</p>
+</blockquote>
+<h2 id="执行上下文"><a href="#执行上下文" class="headerlink" title="执行上下文"></a>执行上下文</h2><p>评估和执行 JavaScript 代码的环境的抽象概念。</p>
+<ul>
+<li><strong>全局执行上下文</strong>— 这是默认或者说基础的上下文，任何不在函数内部的代码都在全局上下文中（一个程序中只会有一个全局执行上下文）。</li>
+<li><strong>函数执行上下文</strong> — 每当一个函数被<strong>调用</strong>时, 都会为该函数创建一个新的上下文（函数上下文可以有任意多个）。每当一个新的执行上下文被创建，它会按定义的顺序执行一系列步骤。</li>
+<li><strong>Eval 函数执行上下文</strong> — 执行在 eval 函数内部的代码也会有它属于自己的执行上下文，但由于 JavaScript 开发者并不经常使用 eval，暂不讨论。</li>
+</ul>
+<h3 id="生命周期"><a href="#生命周期" class="headerlink" title="生命周期"></a>生命周期</h3><p><img src="https://user-gold-cdn.xitu.io/2020/7/13/173480fd15e28686?w=1000&h=290&f=webp&s=11070" srcset="/img/loading.gif" alt=""></p>
+<h3 id="创建阶段"><a href="#创建阶段" class="headerlink" title="创建阶段"></a>创建阶段</h3><h4 id="全局上下文"><a href="#全局上下文" class="headerlink" title="全局上下文"></a>全局上下文</h4><ul>
+<li><strong>生成变量对象</strong>：全局对象（浏览器的情况下为window ）</li>
+<li><strong>建立作用域链：</strong>全局对象</li>
+<li><strong>确定this指向：</strong>设置** this **的值等于全局对象（var === this. === winodw.）</li>
+</ul>
+<h4 id="函数上下文"><a href="#函数上下文" class="headerlink" title="函数上下文"></a>函数上下文</h4><ul>
+<li><strong>生成变量对象</strong>：用活动对象(activation object, AO)来表示变量对象（活动对象是在进入函数上下文时刻被创建的，它通过函数的 arguments 属性初始化）。</li>
+<li><strong>建立作用域链：</strong><ul>
+<li>函数有一个内部属性 [[scope]]，当函数创建的时候，就会保存所有父变量对象到其中。</li>
+<li>当函数激活时，进入函数上下文，创建 VO/AO后，就会将活动对象添加到作用链的前端。</li>
+<li>Scope (作用域链）= [AO].concat([[Scope]]);</li>
+</ul>
+</li>
+<li><strong>确定this指向：</strong>this 永远指向最后<strong>调用</strong>它的那个对象（参见后文）</li>
+</ul>
+<h3 id="执行阶段"><a href="#执行阶段" class="headerlink" title="执行阶段"></a>执行阶段</h3><h4 id="进入执行上下文"><a href="#进入执行上下文" class="headerlink" title="进入执行上下文"></a>进入执行上下文</h4><p>这时候还没有执行代码，<strong>变量对象</strong>会加入：</p>
+<ul>
+<li>函数的所有形参 (如果是函数上下文)<ul>
+<li>由<strong>名称和对应值</strong>组成的一个变量对象的属性被创建</li>
+<li>没有<strong>实参</strong>，属性值设为** undefined**</li>
+</ul>
+</li>
+<li>函数声明<ul>
+<li>由名称和对应值（函数对象(function-object)）组成一个变量对象的属性被创建</li>
+<li>如果变量对象已经存在<strong>相同名称</strong>的属性，则<strong>完全替换</strong>这个属性</li>
+</ul>
+</li>
+<li>变量声明<ul>
+<li>由<strong>名称和对应值（undefined）</strong>组成一个变量对象的属性被创建（var）；</li>
+<li>如果<strong>变量名称</strong>跟已经声明的<strong>形参</strong>或<strong>函数</strong>相同，则变量声明不会干扰已经存在的这类属性</li>
+<li><strong>变量声明提升</strong>:可以在声明之前访问 var 定义的变量（虽然是 undefined），但是在声明之前访问 let 和 const 的变量会得到一个引用错误（未初始化）。</li>
+</ul>
+</li>
+</ul>
+<h4 id="代码执行"><a href="#代码执行" class="headerlink" title="代码执行"></a>代码执行</h4><ul>
+<li>顺序执行代码，根据代码，修改变量对象的值</li>
+</ul>
+<h3 id="总结一下函数执行上下文的整个过程"><a href="#总结一下函数执行上下文的整个过程" class="headerlink" title="总结一下函数执行上下文的整个过程"></a>总结一下函数执行上下文的整个过程</h3><pre><code class="hljs javascript"><span class="hljs-keyword">var</span> scope = <span class="hljs-string">"global scope"</span>;
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">checkscope</span>(<span class="hljs-params"></span>)</span>&#123;
+    <span class="hljs-keyword">var</span> scope2 = <span class="hljs-string">'local scope'</span>;
+    <span class="hljs-keyword">return</span> scope2;
+&#125;
+checkscope();</code></pre>
+<p>执行过程如下：</p>
+<ol>
+<li>checkscope 函数被创建，保存作用域链到 内部属性[[scope]]</li>
+<li>执行 checkscope 函数，创建 checkscope 函数执行上下文，checkscope 函数执行上下文被压入执行上下文栈</li>
+<li>checkscope 函数并不立刻执行，开始做准备工作，第一步：复制函数[[scope]]属性创建作用域链</li>
+<li>第二步：用 arguments 创建活动对象，随后初始化活动对象，加入形参、函数声明、变量声明</li>
+<li>第三步：将活动对象压入 checkscope 作用域链顶端</li>
+<li>准备工作做完，开始执行函数，随着函数的执行，修改 AO 的属性值</li>
+<li>查找到 scope2 的值，返回后函数执行完毕，函数上下文从执行上下文栈中弹出</li>
+</ol>
+<h2 id="执行上下文栈"><a href="#执行上下文栈" class="headerlink" title="执行上下文栈"></a>执行上下文栈</h2><p>存储代码运行时创建的所有执行上下文。</p>
+<ul>
+<li>当 JavaScript 引擎第一次遇到你的脚本时，它会创建一个全局的执行上下文并且压入当前执行栈。每当引擎遇到一个函数调用，它会为该函数创建一个新的执行上下文并压入栈的顶部。</li>
+<li>引擎会执行那些执行上下文位于栈顶的函数。当该函数执行结束时，执行上下文从栈中弹出，控制流程到达当前栈中的下一个上下文。</li>
+</ul>
+<h2 id="作用域和作用域链"><a href="#作用域和作用域链" class="headerlink" title="作用域和作用域链"></a>作用域和作用域链</h2><ul>
+<li>作用域是指程序源代码中定义变量的区域。</li>
+<li>作用域规定了如何查找变量，也就是确定当前执行代码对变量的访问权限。</li>
+<li>JavaScript 采用词法作用域(lexical scoping)，也就是静态作用域。</li>
+</ul>
+<h3 id="静态和动态作用域"><a href="#静态和动态作用域" class="headerlink" title="静态和动态作用域"></a>静态和动态作用域</h3><ul>
+<li>词法作用域，<strong>函数的作用域在函数定义的时候就决定了</strong>。</li>
+<li>动态作用域，函数的作用域是在函数调用的时候才决定的。</li>
+</ul>
+<h3 id="作用域链"><a href="#作用域链" class="headerlink" title="作用域链"></a>作用域链</h3><ul>
+<li>当查找变量的时候，会先从当前上下文的变量对象中查找。</li>
+<li>如果没有找到，就会从父级(词法层面上的父级)执行上下文的变量对象中查找，一直找到全局上下文的变量对象，也就是全局对象。</li>
+<li>这样由多个执行上下文的变量对象构成的链表就叫做作用域链。</li>
+<li>作用域链和原型继承查找时的区别：如果去查找一个普通对象的属性，但是在当前对象和其原型中都找不到时，会返回<strong>undefined</strong>；但查找的属性在作用域链中不存在的话就会抛出<strong>ReferenceError</strong>。</li>
+</ul>
+<h2 id="内存空间"><a href="#内存空间" class="headerlink" title="内存空间"></a>内存空间</h2><p>JS内存空间分为<strong>栈(stack)</strong>、<strong>堆(heap)</strong>、<strong>池(一般也会归类为栈中)</strong>。 其中<strong>栈</strong>存放变量，<strong>堆</strong>存放复杂对象，<strong>池</strong>存放常量，所以也叫常量池。</p>
+<h3 id="内存生命周期"><a href="#内存生命周期" class="headerlink" title="内存生命周期"></a>内存生命周期</h3><ul>
+<li>1、分配你所需要的内存</li>
+<li>2、使用分配到的内存（读、写）</li>
+<li>3、不需要时将其释放、归还</li>
+</ul>
+<h3 id="垃圾回收"><a href="#垃圾回收" class="headerlink" title="垃圾回收"></a>垃圾回收</h3><p>JS有自动垃圾收集机制，常用<strong>标记清除</strong>算法来找到哪些对象是不再继续使用的，当将变量设为null时释放引用，脱离执行环境，这个值会在下一次垃圾收集器执行操作时被找到并释放。</p>
+<ul>
+<li><strong>局部变量</strong>：局部作用域中，函数执行完毕，局部变量没有存在意义，垃圾收集器很容易做出判断并回收。</li>
+<li><strong>全局变量</strong>：全局变量什么时候需要自动释放内存空间则很难判断，所以在开发中尽量<strong>避免</strong>使用全局变量。</li>
+</ul>
+<h4 id="常见垃圾回收算法"><a href="#常见垃圾回收算法" class="headerlink" title="常见垃圾回收算法"></a>常见垃圾回收算法</h4><ul>
+<li>引用计数（现代浏览器不再使用）：<ul>
+<li>看一个对象是否有指向它的<strong>引用</strong>。如果没有其他对象指向它了，说明该对象已经不再需要了。</li>
+<li><strong>循环引用：</strong>如果两个对象相互引用，尽管他们已不再使用，但是垃圾回收器不会进行回收，最终可能会导致内存泄露。</li>
+</ul>
+</li>
+<li>标记清除（常用）：<ul>
+<li>从根部（在JS中就是全局对象）出发定时扫描内存中的对象，凡是能从根部到达的对象，<strong>保留</strong>。那些从根部出发无法触及到的对象被标记为<strong>不再使用</strong>，稍后进行回收。</li>
+<li>无法触及的对象包含了没有引用的对象这个概念，但反之未必成立。</li>
+</ul>
+</li>
+</ul>
+<h3 id="常见的内存泄漏"><a href="#常见的内存泄漏" class="headerlink" title="常见的内存泄漏"></a>常见的内存泄漏</h3><h4 id="1、意外的全局变量"><a href="#1、意外的全局变量" class="headerlink" title="1、意外的全局变量"></a>1、意外的全局变量</h4><pre><code class="hljs javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">foo</span>(<span class="hljs-params">arg</span>) </span>&#123;
+    a = <span class="hljs-string">"this is a hidden global variable"</span>; <span class="hljs-comment">//未使用var定义</span>
+    <span class="hljs-keyword">this</span>.b = <span class="hljs-string">"potential accidental global"</span>; <span class="hljs-comment">//this指向全局</span>
+&#125;</code></pre>
+<p><strong>解决方法</strong>：<br />在 JavaScript 文件头部加上 <code>&#39;use strict&#39;</code>，使用严格模式避免意外的全局变量，此时<strong>上例中的this指向<code>undefined</code></strong>。如果必须使用全局变量存储大量数据时，确保用完以后把它设置为 null 或者重新定义。</p>
+<h4 id="2、被遗忘的计时器或回调函数"><a href="#2、被遗忘的计时器或回调函数" class="headerlink" title="2、被遗忘的计时器或回调函数"></a>2、被遗忘的计时器或回调函数</h4><ul>
+<li>必须手动终止定时器</li>
+<li>现代的浏览器（包括 IE 和 Microsoft Edge）使用了更先进的垃圾回收算法（标记清除），已经可以正确检测和处理循环引用了。即回收节点内存时，不必非要调用 removeEventListener 了。</li>
+</ul>
+<h4 id="3、脱离-DOM-的引用"><a href="#3、脱离-DOM-的引用" class="headerlink" title="3、脱离 DOM 的引用"></a>3、脱离 DOM 的引用</h4><p>如果把DOM 存成字典（JSON 键值对）或者数组，此时，同样的 DOM 元素存在两个引用：一个在 DOM 树中，另一个在字典中。那么将来需要把两个引用都清除。</p>
+<h2 id="闭包"><a href="#闭包" class="headerlink" title="闭包"></a>闭包</h2><ul>
+<li>闭包是一个可以访问外部作用域的内部函数，即使这个外部作用域已经执行结束。闭包的外部作用域是在其<strong>定义</strong>的时候已决定，而不是执行的时候。</li>
+<li>闭包中的变量并不保存中栈内存中，而是保存在堆内存中，这也就解释了函数之后之后为什么闭包还能引用到函数内的变量，这些被引用的变量直到闭包被销毁时才会被销毁。</li>
+<li>闭包使得 timer 定时器，事件处理，AJAX 请求等异步任务更加容易，可以通过闭包来达到封装性。</li>
+<li><strong>能不能访问关键看在哪里定义**</strong>，而不是在哪里调用，<strong><strong>调用方法的时候，会跳转到定义方法时候的环境里，而不是调用方法的那一行代码所在的</strong></strong>环境。**</li>
+<li>闭包引起的内存泄露那都是因为浏览器的gc问题(IE8以下为首)导致的，跟js本身没有关系，所以，请不要再问js闭包会不会引发内存泄露了</li>
+<li>闭包只存储外部变量的引用，而不会拷贝这些外部变量的值。var 只有函数作用域  let，coast有函数作用域和块作用域。</li>
+</ul>
+<h4 id="问一个问题"><a href="#问一个问题" class="headerlink" title="问一个问题"></a>问一个问题</h4><p>下面的两段代码中，<strong>checkscope()</strong>执行完成后，闭包<strong>f</strong>所引用的自由变量<strong>scope</strong>会被垃圾回收吗？为什么？</p>
+<pre><code class="hljs javascript"><span class="hljs-keyword">var</span> scope = <span class="hljs-string">"global scope"</span>;
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">checkscope</span>(<span class="hljs-params"></span>)</span>&#123;
+    <span class="hljs-keyword">var</span> scope = <span class="hljs-string">"local scope"</span>;
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">f</span>(<span class="hljs-params"></span>)</span>&#123;
+        <span class="hljs-keyword">return</span> scope;
+    &#125;
+    <span class="hljs-keyword">return</span> f;
+&#125;
+
+checkscope()();</code></pre>
+<pre><code class="hljs javascript"><span class="hljs-keyword">var</span> scope = <span class="hljs-string">"global scope"</span>;
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">checkscope</span>(<span class="hljs-params"></span>)</span>&#123;
+    <span class="hljs-keyword">var</span> scope = <span class="hljs-string">"local scope"</span>;
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">f</span>(<span class="hljs-params"></span>)</span>&#123;
+        <span class="hljs-keyword">return</span> scope;
+    &#125;
+    <span class="hljs-keyword">return</span> f;
+&#125;
+
+<span class="hljs-keyword">var</span> foo = checkscope(); 
+foo();</code></pre>
+<blockquote>
+<p>第一段中自由变量特定时间之后回收：执行完毕后出栈，该对象没有绑定给谁，从Root开始查找无法可达，此活动对象一段时间后会被回收<br>第二段中自由变量不回收：此对象赋值给 <strong>var foo = checkscope();</strong>，将foo压入栈中，foo指向堆中的f活动对象,对于Root来说可达，不会被回收。</p>
+</blockquote>
+<p><strong>如果想让第二段中自由变量回收，要怎么办？</strong><br /><strong>foo = null;</strong>，把引用断开就可以了。</p>
+<h2 id="this指向"><a href="#this指向" class="headerlink" title="this指向"></a>this指向</h2><p><strong>this 永远指向 最后调用它的那个对象</strong> <br />this的值不会被保存在作用域链中，this的值取决于函数被调用的时候的情景（也就是执行上下文被创建时确定的）。<br /></p>
+<h3 id="判断函数上下文中this的绑定对象"><a href="#判断函数上下文中this的绑定对象" class="headerlink" title="判断函数上下文中this的绑定对象"></a>判断函数上下文中this的绑定对象</h3><ul>
+<li>new绑定：作为一个构造函数，this绑定到<strong>新创建的对象</strong>，注意：显示return函数或对象，返回值不是新创建的对象，而是显式返回的函数或对象。</li>
+<li>显示绑定（call，apply，bind)：<ul>
+<li>call()、apply()–this指向绑定的对象上</li>
+<li>bind()–this将永久地被绑定到了bind的第一个参数</li>
+</ul>
+</li>
+<li>隐式绑定：this指向<strong>调用函数的对象，</strong>由上下文对象调用时，绑定到上下文对象</li>
+<li>默认绑定： 非严格模式情况下，this 指向 window(全局变量), 严格模式下，this指向 undefined</li>
+<li>箭头函数–所有的箭头函数都没有自己的this<ul>
+<li>箭头函数不绑定this，箭头函数中的this相当于普通变量。</li>
+<li>箭头函数的this寻值行为与普通变量相同，在作用域中逐级寻找。</li>
+<li>箭头函数的this无法通过bind，call，apply来<strong>直接</strong>修改（可以间接修改）。</li>
+<li>改变作用域中this的指向可以改变箭头函数的this。</li>
+<li>eg. <code>function closure(){()=&gt;{//code }}</code>，在此例中，我们通过改变封包环境<code>closure.bind(another)()</code>，来改变箭头函数this的指向</li>
+</ul>
+</li>
+<li>作为一个DOM事件处理函数–this指向触发事件的元素，也就是始事件处理程序所绑定到的DOM节点。</li>
+<li>立即执行函数(function() {})()中的this指向的window对象，因为完整写法就是window.(function() {})()<blockquote>
+<p><strong>new 绑定 &gt; 显式绑定 &gt; 隐式绑定 &gt; 默认绑定</strong></p>
+</blockquote>
+</li>
+</ul>
+<h2 id="call，apply，bind"><a href="#call，apply，bind" class="headerlink" title="call，apply，bind"></a>call，apply，bind</h2><h3 id="call，apply，bind三者之间的区别"><a href="#call，apply，bind三者之间的区别" class="headerlink" title="call，apply，bind三者之间的区别"></a>call，apply，bind三者之间的区别</h3><ul>
+<li>三者都是用来改变函数的this指向</li>
+<li>三者的第一个参数都是this指向的对象</li>
+<li>bind是返回一个绑定函数可稍后执行，call、apply是立即调用</li>
+<li>三者都可以给定参数传递</li>
+<li>call和bind给定参数需要将参数全部列出，apply给定参数数组</li>
+</ul>
+<h3 id="模拟一个call"><a href="#模拟一个call" class="headerlink" title="模拟一个call"></a><strong>模拟一个call</strong></h3><pre><code class="hljs javascript"><span class="hljs-comment">//ES6实现</span>
+<span class="hljs-built_in">Function</span>.prototype.myCall=<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">context</span>)</span>&#123;
+    context=context || <span class="hljs-built_in">window</span>  <span class="hljs-comment">//当参数为null时指向window</span>
+    <span class="hljs-keyword">var</span> args=[...arguments].slice(<span class="hljs-number">1</span>)<span class="hljs-comment">//将类数组对象转为数组并截取从1到结尾的参数</span>
+    <span class="hljs-keyword">var</span> fn = <span class="hljs-built_in">Symbol</span>() <span class="hljs-comment">//设定fn为唯一属性</span>
+    context[fn]=<span class="hljs-keyword">this</span> <span class="hljs-comment">//fn绑定当前函数</span>
+    <span class="hljs-keyword">var</span> result=context[fn](...args) <span class="hljs-comment">//传入参并执行函数，考虑有返回值的情况</span>
+    <span class="hljs-keyword">delete</span> context[fn] <span class="hljs-comment">//删除fn</span>
+    <span class="hljs-keyword">return</span> result <span class="hljs-comment">//返回return值</span>
+&#125;
+<span class="hljs-comment">//ES3实现</span>
+<span class="hljs-built_in">Function</span>.prototype.myCall=<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">context</span>)</span>&#123;
+    context=context || <span class="hljs-built_in">window</span>
+    <span class="hljs-keyword">var</span> args=[]
+    <span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i=<span class="hljs-number">1</span>;i&lt;<span class="hljs-built_in">arguments</span>.length;i++)&#123; <span class="hljs-comment">//for循环取参数数组</span>
+        args.push(<span class="hljs-built_in">arguments</span>[i])
+    &#125;
+    context.fn=<span class="hljs-keyword">this</span>
+    <span class="hljs-keyword">var</span> result=<span class="hljs-built_in">eval</span>(<span class="hljs-string">'context.fn('</span>+args+<span class="hljs-string">')'</span>) <span class="hljs-comment">//eval解析参数列表</span>
+    <span class="hljs-keyword">delete</span> context.fn
+    <span class="hljs-keyword">return</span> result
+&#125;</code></pre>
+<h3 id="模拟一个apply"><a href="#模拟一个apply" class="headerlink" title="模拟一个apply"></a><strong>模拟一个apply</strong></h3><p><strong>apply和call的区别是call需要列出所有参数，而apply传入一个参数数组</strong></p>
+<pre><code class="hljs javascript"><span class="hljs-comment">//ES6实现</span>
+<span class="hljs-built_in">Function</span>.prototype.myApply=<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">context</span>)</span>&#123;
+    context=context || <span class="hljs-built_in">window</span>
+    <span class="hljs-keyword">var</span> args=<span class="hljs-built_in">arguments</span>[<span class="hljs-number">1</span>]||[] <span class="hljs-comment">//与call不同的地方是直接传入一个参数数组，获取该数组</span>
+    <span class="hljs-keyword">var</span> fn = <span class="hljs-built_in">Symbol</span>();
+    context[fn]=<span class="hljs-keyword">this</span>
+    <span class="hljs-keyword">var</span> result=context[fn](...args)
+    <span class="hljs-keyword">delete</span> context[fn]
+    <span class="hljs-keyword">return</span> result
+&#125;
+<span class="hljs-comment">//ES3实现</span>
+<span class="hljs-built_in">Function</span>.prototype.myApply=<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">context</span>)</span>&#123;
+    context=context || <span class="hljs-built_in">window</span>
+    <span class="hljs-keyword">var</span> args=<span class="hljs-built_in">arguments</span>[<span class="hljs-number">1</span>]||[] <span class="hljs-comment">//与call不同的地方是直接传入一个参数数组，获取该数组</span>
+    context.fn=<span class="hljs-keyword">this</span>
+    <span class="hljs-keyword">var</span> result=<span class="hljs-built_in">eval</span>(<span class="hljs-string">'context.fn('</span>+args+<span class="hljs-string">')'</span>)
+    <span class="hljs-keyword">delete</span> context.fn
+    <span class="hljs-keyword">return</span> result
+&#125;</code></pre>
+<h3 id="模拟一个bind"><a href="#模拟一个bind" class="headerlink" title="模拟一个bind"></a><strong>模拟一个bind</strong></h3><ul>
+<li>1、可以指定<code>this</code></li>
+<li>2、返回一个函数</li>
+<li>3、可以传入参数</li>
+<li>4、柯里化<pre><code class="hljs javascript"><span class="hljs-built_in">Function</span>.prototype.myBind = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">context</span>) </span>&#123;
+    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> <span class="hljs-keyword">this</span> !== <span class="hljs-string">"function"</span>) &#123;
+        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">"Function.prototype.bind - what is trying to be bound is not callable"</span>);
+    &#125;
+    <span class="hljs-keyword">var</span> self = <span class="hljs-keyword">this</span>
+    <span class="hljs-keyword">var</span> args1 = [...arguments].slice(<span class="hljs-number">1</span>)
+    <span class="hljs-keyword">var</span> fn = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>&#123; &#125;;
+    <span class="hljs-keyword">var</span> newContext = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>&#123;
+        <span class="hljs-keyword">var</span> args2 = [...arguments]
+        <span class="hljs-keyword">return</span> self.myCall(<span class="hljs-keyword">this</span> <span class="hljs-keyword">instanceof</span> fn ? <span class="hljs-keyword">this</span> : context, ...args1, ...args2);
+    &#125;
+    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.prototype) &#123;
+        fn.prototype = <span class="hljs-keyword">this</span>.prototype
+    &#125;
+    newContext.prototype = <span class="hljs-keyword">new</span> fn();
+    <span class="hljs-keyword">return</span> newContext;
+&#125;</code></pre>
+<h2 id="疯狂自测一波"><a href="#疯狂自测一波" class="headerlink" title="疯狂自测一波"></a>疯狂自测一波</h2><h3 id="Q1-判断下面两段代码分别输出什么？"><a href="#Q1-判断下面两段代码分别输出什么？" class="headerlink" title="Q1:判断下面两段代码分别输出什么？"></a><strong>Q1:判断下面两段代码分别输出什么？</strong></h3><pre><code class="hljs javascript"><span class="hljs-keyword">var</span> scope = <span class="hljs-string">"global scope"</span>;
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">checkscope</span>(<span class="hljs-params"></span>)</span>&#123;
+    <span class="hljs-keyword">var</span> scope = <span class="hljs-string">"local scope"</span>;
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">f</span>(<span class="hljs-params"></span>)</span>&#123;
+        <span class="hljs-keyword">return</span> scope;
+    &#125;
+    <span class="hljs-keyword">return</span> f();
+&#125;
+checkscope();</code></pre>
+<pre><code class="hljs javascript"><span class="hljs-keyword">var</span> scope = <span class="hljs-string">"global scope"</span>;
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">checkscope</span>(<span class="hljs-params"></span>)</span>&#123;
+    <span class="hljs-keyword">var</span> scope = <span class="hljs-string">"local scope"</span>;
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">f</span>(<span class="hljs-params"></span>)</span>&#123;
+        <span class="hljs-keyword">return</span> scope;
+    &#125;
+    <span class="hljs-keyword">return</span> f;
+&#125;
+checkscope()();</code></pre>
+<blockquote>
+<p>两段代码都会打印：<code>local scope</code>。<br>JavaScript采用的是词法作用域，函数的作用域基于函数<strong>创建</strong>的位置。</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="Q2-下面两段代码执行的结果一样，但是两段代码究竟有哪些不同呢？"><a href="#Q2-下面两段代码执行的结果一样，但是两段代码究竟有哪些不同呢？" class="headerlink" title="Q2:下面两段代码执行的结果一样，但是两段代码究竟有哪些不同呢？"></a><strong>Q2:下面</strong>两段代码执行的结果一样，但是两段代码究竟有哪些不同呢？</h3><pre><code class="hljs javascript"><span class="hljs-keyword">var</span> scope = <span class="hljs-string">"global scope"</span>;
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">checkscope</span>(<span class="hljs-params"></span>)</span>&#123;
+    <span class="hljs-keyword">var</span> scope = <span class="hljs-string">"local scope"</span>;
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">f</span>(<span class="hljs-params"></span>)</span>&#123;
+        <span class="hljs-keyword">return</span> scope;
+    &#125;
+    <span class="hljs-keyword">return</span> f();
+&#125;
+checkscope();</code></pre>
+<pre><code class="hljs javascript"><span class="hljs-keyword">var</span> scope = <span class="hljs-string">"global scope"</span>;
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">checkscope</span>(<span class="hljs-params"></span>)</span>&#123;
+    <span class="hljs-keyword">var</span> scope = <span class="hljs-string">"local scope"</span>;
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">f</span>(<span class="hljs-params"></span>)</span>&#123;
+        <span class="hljs-keyword">return</span> scope;
+    &#125;
+    <span class="hljs-keyword">return</span> f;
+&#125;
+checkscope()();</code></pre>
+<blockquote>
+<p>执行上下文栈的变化不一样</p>
+</blockquote>
+<pre><code class="hljs javascript"><span class="hljs-comment">//模拟第一段代码：</span>
+ECStack.push(<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">checkscope</span>&gt;</span> functionContext);</span>
+ECStack.push(&lt;f&gt; functionContext);
+ECStack.pop();
+ECStack.pop();
+//模拟第二段代码：
+ECStack.push(&lt;checkscope&gt; functionContext);
+ECStack.pop();
+ECStack.push(&lt;f&gt; functionContext);
+ECStack.pop();</code></pre>
+<h3 id="Q3-判断下面两段代码分别输出什么？"><a href="#Q3-判断下面两段代码分别输出什么？" class="headerlink" title="Q3:判断下面两段代码分别输出什么？"></a><strong>Q3:判断下面两段代码分别输出什么？</strong></h3><pre><code class="hljs javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">foo</span>(<span class="hljs-params"></span>) </span>&#123;
+    <span class="hljs-built_in">console</span>.log(a);
+    a = <span class="hljs-number">1</span>;
+&#125;
+foo();</code></pre>
+<pre><code class="hljs javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">bar</span>(<span class="hljs-params"></span>) </span>&#123;
+    a = <span class="hljs-number">1</span>;
+    <span class="hljs-built_in">console</span>.log(a);
+&#125;
+bar();</code></pre>
+<blockquote>
+<p>第一段会报错：<code>Uncaught ReferenceError: a is not defined</code>( “a” 并没有通过 var 关键字声明，所有不会被存放在 AO 中)<br>第二段会打印：<code>1</code>(执行 console 的时候，全局对象已经被赋予了 a 属性)</p>
+</blockquote>
+<h3 id="Q4-判断下面这段代码输出什么？"><a href="#Q4-判断下面这段代码输出什么？" class="headerlink" title="Q4:判断下面这段代码输出什么？"></a><strong>Q4:判断下面这段代码输出什么？</strong></h3><pre><code class="hljs javascript"><span class="hljs-built_in">console</span>.log(foo);
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">foo</span>(<span class="hljs-params"></span>)</span>&#123;
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"foo"</span>);
+&#125;
+<span class="hljs-keyword">var</span> foo = <span class="hljs-number">1</span>;</code></pre>
+<blockquote>
+<p>会打印函数，而不是 undefined<br>(如果<strong>变量名称</strong>跟已经声明的<strong>形参</strong>或<strong>函数</strong>相同，则变量声明<strong>不会干扰</strong>已经存在的这类属性)</p>
+</blockquote>
+<h3 id="Q5-判断下面两段代码分别输出什么？"><a href="#Q5-判断下面两段代码分别输出什么？" class="headerlink" title="Q5:判断下面两段代码分别输出什么？"></a><strong>Q5:判断下面两段代码分别输出什么？</strong></h3><pre><code class="hljs javascript"><span class="hljs-keyword">var</span> foo = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>&#123;
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'foo1'</span>);
+&#125;
+foo(); 
+<span class="hljs-keyword">var</span> foo = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>&#123;
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'foo2'</span>);
+&#125;
+foo();</code></pre>
+<pre><code class="hljs javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">foo</span>(<span class="hljs-params"></span>) </span>&#123;
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'foo1'</span>);
+&#125;
+foo(); 
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">foo</span>(<span class="hljs-params"></span>) </span>&#123;
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'foo2'</span>);
+&#125;
+foo();</code></pre>
+<blockquote>
+<p>第一段会打印：foo1 和 foo2 变量声明提升 （提升为undefined，边执行边赋值）<br>第二段会打印：foo2 和 foo2 函数声明提升 （函数提升，当重复时后一个会对前一个进行覆盖）</p>
+</blockquote>
+<h3 id="Q6-判断下面这段代码输出什么？"><a href="#Q6-判断下面这段代码输出什么？" class="headerlink" title="Q6:判断下面这段代码输出什么？"></a><strong>Q6:判断下面这段代码输出什么？</strong></h3><pre><code class="hljs javascript"><span class="hljs-keyword">var</span> a = &#123;<span class="hljs-attr">n</span>: <span class="hljs-number">1</span>&#125;;
+<span class="hljs-keyword">var</span> b = a;
+a.x = a = &#123;<span class="hljs-attr">n</span>: <span class="hljs-number">2</span>&#125;;
+
+<span class="hljs-built_in">console</span>.log(a.x)
+<span class="hljs-built_in">console</span>.log(b.x)</code></pre>
+<blockquote>
+<p>a.x：undefined<br>b.x：{n: 2}<br>原因：</p>
+<ul>
+<li>1、优先级。<code>.</code>的优先级高于<code>=</code>，所以先执行<code>a.x</code>，堆内存中的<code>{n: 1}</code>就会变成<code>{n: 1, x: undefined}</code>，改变之后相应的<code>b.x</code>也变化了，因为指向的是同一个对象。</li>
+<li>2、赋值操作是<code>从右到左</code>，所以先执行<code>a = {n: 2}</code>，<code>a</code>的引用就被改变了，然后这个返回值又赋值给了<code>a.x</code>，<strong>需要注意</strong>的是这时候<code>a.x</code>是第一步中的<code>{n: 1, x: undefined}</code>那个对象，其实就是<code>b.x</code>，相当于<code>b.x = {n: 2}</code></li>
+</ul>
+</blockquote>
+<h3 id="Q7-判断下面两段代码的this对象是什么及输出什么？"><a href="#Q7-判断下面两段代码的this对象是什么及输出什么？" class="headerlink" title="Q7:判断下面两段代码的this对象是什么及输出什么？"></a><strong>Q7:判断下面两段代码的this对象是什么及输出什么？</strong></h3><pre><code class="hljs javascript"><span class="hljs-keyword">var</span> person = &#123;
+  name: <span class="hljs-string">"personName"</span>,
+  getName: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.name;
+  &#125;
+&#125;
+<span class="hljs-built_in">console</span>.log(person.getName());</code></pre>
+<pre><code class="hljs javascript"><span class="hljs-keyword">var</span> name = <span class="hljs-string">"windowName"</span>;
+<span class="hljs-keyword">var</span> person = &#123;
+  name: <span class="hljs-string">"axuebin"</span>,
+  getName: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.name;
+  &#125;
+&#125;
+<span class="hljs-keyword">var</span> getName = person.getName;
+<span class="hljs-built_in">console</span>.log(getName());</code></pre>
+<blockquote>
+<p>第一段会打印：personName  this指向person<br>第二段会打印：windowName this指向全局变量<br>this的指向取决于函数调用时</p>
+</blockquote>
+<h2 id="巨人的肩膀"><a href="#巨人的肩膀" class="headerlink" title="巨人的肩膀"></a>巨人的肩膀</h2><ul>
+<li><a href="https://book.douban.com/subject/10546125/" target="_blank" rel="noopener"><strong>《JavaScript高级程序设计(第3版)》</strong></a></li>
+<li><a href="https://github.com/mqyqingfeng/Blog" target="_blank" rel="noopener"><strong>冴羽JavaScript深入系列15篇</strong></a></li>
+<li><a href="https://www.jianshu.com/p/d647aa6d1ae6" target="_blank" rel="noopener"><strong>前端基础进阶（七）：全方位解读this</strong></a></li>
+<li><a href="https://muyiy.cn/blog/1/1.1.html" target="_blank" rel="noopener"><strong>木易杨前端进阶-第 1 期：调用堆栈</strong></a></li>
+<li><a href="https://muyiy.cn/blog/2/2.1.html" target="_blank" rel="noopener"><strong>木易杨前端进阶-第 2 期：作用域闭包</strong></a></li>
+<li><a href="https://muyiy.cn/blog/3/3.1.html#_1-%E8%B0%83%E7%94%A8%E4%BD%8D%E7%BD%AE" target="_blank" rel="noopener"><strong>木易杨前端进阶-第 3 期：this全面解析</strong></a></li>
+<li><a href="https://juejin.im/post/5ba32171f265da0ab719a6d7" target="_blank" rel="noopener"><strong>理解 JavaScript 中的执行上下文和执行栈</strong></a></li>
+<li><a href="https://github.com/axuebin/articles/issues/6" target="_blank" rel="noopener"><strong>JavaScript基础心法——this</strong></a></li>
+<li><a href="https://github.com/kuitos/kuitos.github.io/issues/18" target="_blank" rel="noopener"><strong>一道js面试题引发的思考</strong></a></li>
+</ul>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a><strong>最后</strong></h2><p>欢迎纠错，看到会及时修改哒！❤<br>温故而知新，希望我们都可以保持本心，念念不忘，必有回响。</p>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E6%8A%80%E6%9C%AFblog/">技术blog</a>
+                    
+                      <a class="hover-with-bg" href="/categories/%E6%8A%80%E6%9C%AFblog/JS/">JS</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/JS/">JS</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" target="_blank" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/07/17/technology/js-basic1/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">从头梳理JS基础（一）数据类型及深浅拷贝</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/2020/06/20/technology/promiseA+/">
+                        <span class="hidden-mobile">从 Promises/A+ 规范瞅一瞅 Promise</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+    <!-- APlayer 音乐播放器 -->
+    <div id="aplayer"></div>
+    <script defer src="https://cdn.staticfile.org/aplayer/1.10.1/APlayer.min.js" ></script>
+<link  rel="stylesheet" href="https://cdn.staticfile.org/aplayer/1.10.1/APlayer.min.css" />
+<script type="text/javascript">
+  var oldLoadAp = window.onload;
+  window.onload = function () {
+    oldLoadAp && oldLoadAp();
+
+    new APlayer({
+      container: document.getElementById('aplayer'),
+      fixed: true,
+      autoplay: 'false' === 'true',
+      loop: 'all',
+      order: 'random',
+      theme: '#b7daff',
+      preload: 'none',
+      audio: [{"name":"海底","artist":"三块木头","url":"/songs/三块木头 - 海底.mp3","cover":"/img/cover.png"},{"name":"ハレハレヤ（朗朗晴天）","artist":"猫瑾","url":"/songs/猫瑾 - ハレハレヤ（朗朗晴天）.mp3","cover":"/img/cover.png"},{"name":"ぼくら（城镇青年ED）","artist":"玖肆仟","url":"/songs/玖肆仟 - ぼくら（城镇青年ED）.mp3","cover":"/img/cover.png"}]
+    });
+  }
+</script>
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <span>&</span>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+      <i class="iconfont icon-love"></i>
+      <span>by 芋头</span>
+      <!-- <span id="hitokoto">:D 获取中...</span> -->
+    </div>
+    <div>
+      <span id="timeDate">载入天数...</span>
+      <span id="times">载入时分秒...</span>
+    </div>
+    
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/main.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: 'article.markdown-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "从头梳理JS基础（二）函数执行的整个过程&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+  // fetch('https://v1.hitokoto.cn')
+  //   .then(response => response.json())
+  //   .then(data => {
+  //     const hitokoto = document.getElementById('hitokoto')
+  //     hitokoto.innerText = data.hitokoto
+  //   })
+  //   .catch(console.error)
+  var now = new Date();
+  function createtime() {
+    var grt = new Date("07/28/2020 00:00:00");//此处修改你的建站时间或者网站上线时间
+    now.setTime(now.getTime() + 250);
+    days = (now - grt) / 1000 / 60 / 60 / 24;
+    dnum = Math.floor(days);
+    hours = (now - grt) / 1000 / 60 / 60 - (24 * dnum);
+    hnum = Math.floor(hours);
+    if (String(hnum).length == 1) {
+      hnum = "0" + hnum;
+    }
+    minutes = (now - grt) / 1000 / 60 - (24 * 60 * dnum) - (60 * hnum);
+    mnum = Math.floor(minutes);
+    if (String(mnum).length == 1) {
+      mnum = "0" + mnum;
+    }
+    seconds = (now - grt) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+    snum = Math.round(seconds);
+    if (String(snum).length == 1) {
+      snum = "0" + snum;
+    }
+    document.getElementById("timeDate").innerHTML = "按时长大的第&nbsp" + dnum + "&nbsp天";
+    document.getElementById("times").innerHTML = hnum + "&nbsp小时&nbsp" + mnum + "&nbsp分&nbsp" + snum + "&nbsp秒";
+  }
+  setInterval("createtime()", 250);
+</script>
+
+</body>
+</html>

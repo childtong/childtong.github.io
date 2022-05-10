@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.ico">
+  <link rel="icon" type="image/png" href="/img/favicon.ico">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#705a98">
+  <meta name="description" content="">
+  <meta name="author" content="XuYuTong">
+  <meta name="keywords" content="">
+  <title>vue-cli3发布一个npm包（踩坑指南） - 芋头&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+  
+
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+  
+<link rel="stylesheet" href="/css/iconfont/iconfont.css">
+
+
+
+  <script  src="/js/utils.js" ></script>
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>芋头's Blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+  <div class="mt-3 post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2021-06-10 17:00">
+      2021年6月10日 下午
+    </time>
+  </div>
+
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.7k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      44
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <h3 id="前奏"><a href="#前奏" class="headerlink" title="前奏"></a>前奏</h3><p>最近项目中做了一些工具组件，想着不如打成npm包，沉淀成基础能力，也方便后面其他的项目中使用，因着之前有过相关经验了，信心满满的开搞啦😀。结果dist包顺利的打出来一引用，emmm好像找不到export的组件【尴尬】。从头顺了一遍流程，没有问题，那么。。。偏差应当就在于“脚手架升级了！”，是了没错，现在都是用vue-cli3及以上的版本创建项目了，而上一次打npm好像还是在vue-cli2的时代【我没读书我有罪😭】，遇事不决查文档，于是跑去把官网文档重新看了一遍，终于踩坑成功辽！</p>
+<h3 id="库模式打包"><a href="#库模式打包" class="headerlink" title="库模式打包"></a>库模式打包</h3><p>在 vue cli 的官方文档中，找到了打包库模式的方法。详细文档可以参考<a href="https://cli.vuejs.org/zh/guide/build-targets.html#%E6%9E%84%E5%BB%BA%E7%9B%AE%E6%A0%87" target="_blank" rel="noopener">vue-cli 构建目标库方法</a></p>
+<h4 id="1-入口文件"><a href="#1-入口文件" class="headerlink" title="#1 入口文件"></a>#1 入口文件</h4><p>入口文件可以是一个 .js 或一个 .vue 文件。如果没有指定入口，则会使用 src/App.vue。这里我们新建一个index.js用于直接export组件：</p>
+<pre><code class="hljs javascript"><span class="hljs-keyword">export</span> &#123; <span class="hljs-keyword">default</span> <span class="hljs-keyword">as</span> myLib &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">'@/views/myLib'</span></code></pre>
+<blockquote>
+<p>当使用一个 .vue 文件作为入口时，你的库会直接暴露这个 Vue 组件本身，因为组件始终是默认导出的内容。当你使用一个 .js 或 .ts 文件作为入口时，它可能会包含具名导出，所以库会暴露为一个模块。也就是说你的库必须在 UMD 构建中通过 window.yourLib.default 访问，或在 CommonJS 构建中通过 const myLib = require(‘mylib’).default 访问。如果你没有任何具名导出并希望直接暴露默认导出，你可以在 vue.config.js 中使用以下 webpack 配置：</p>
+</blockquote>
+<pre><code class="hljs javascript"><span class="hljs-built_in">module</span>.exports = &#123;
+  configureWebpack: &#123;
+    output: &#123;
+      libraryExport: <span class="hljs-string">'default'</span>
+    &#125;
+  &#125;
+&#125;</code></pre>
+<h4 id="2-构建命令"><a href="#2-构建命令" class="headerlink" title="#2 构建命令"></a>#2 构建命令</h4><p>你可以通过下面的命令将一个单独的入口构建为一个库。</p>
+<pre><code class="hljs javascript">vue-cli-service build --target lib --name myLib [entry]
+
+#输出结果
+
+File                     Size                     Gzipped
+
+dist/myLib.umd.min.js    <span class="hljs-number">13.28</span> kb                 <span class="hljs-number">8.42</span> kb
+dist/myLib.umd.js        <span class="hljs-number">20.95</span> kb                 <span class="hljs-number">10.22</span> kb
+dist/myLib.common.js     <span class="hljs-number">20.57</span> kb                 <span class="hljs-number">10.09</span> kb  
+dist/myLib.css           <span class="hljs-number">0.33</span> kb                  <span class="hljs-number">0.23</span> kb</code></pre>
+<p>构建一个库会输出：</p>
+<ul>
+<li>dist/myLib.common.js：一个给打包器用的 CommonJS 包 (不幸的是，webpack 目前还并没有支持 ES modules 输出格式的包)</li>
+<li>dist/myLib.umd.js：一个直接给浏览器或 AMD loader 使用的 UMD 包</li>
+<li>dist/myLib.umd.min.js：压缩后的 UMD 构建版本</li>
+<li>dist/myLib.css：提取出来的 CSS 文件 (可以通过在 vue.config.js 中设置 css: { extract: false } 强制内联)</li>
+</ul>
+<p>新建一个index.js作为入口文件<br>执行构建命令：</p>
+<pre><code class="hljs javascript">vue-cli-service build --target lib --name myLib --dest lib src/index.js</code></pre>
+<p>查看过文件内容后，发现 <code>myLib.umd.js</code> 使用了umd 的统一模块定义方法，可以兼容所有的模块化方式，可以使用于任意环境，正是我们所需要的。<br>​</p>
+<h4 id="3-vue依赖"><a href="#3-vue依赖" class="headerlink" title="#3 vue依赖"></a>#3 vue依赖</h4><p>在库模式中，Vue 是外置的。这意味着包中不会有 Vue，即便你在代码中导入了 Vue。如果这个库会通过一个打包器使用，它将尝试通过打包器以依赖的方式加载 Vue；否则就会回退到一个全局的 Vue 变量。要避免此行为，可以在build命令中添加<code>--inline-vue</code>标志。</p>
+<pre><code class="hljs javascript">vue-cli-service build --target lib --name myLib --dest lib src/index.js --inline-vue</code></pre>
+<h4 id="4-测试结果"><a href="#4-测试结果" class="headerlink" title="#4 测试结果"></a>#4 测试结果</h4><p>将构建后的lib文件夹复制到项目中进行测试：</p>
+<pre><code class="hljs javascript">&lt;template&gt;
+  &lt;div&gt;
+    &lt;myLib /&gt;
+  &lt;<span class="hljs-regexp">/div&gt;</span>
+<span class="hljs-regexp">&lt;/</span>template&gt;
+&lt;script&gt;
+<span class="hljs-keyword">import</span> &#123; Vue, Component&#125; <span class="hljs-keyword">from</span> <span class="hljs-string">'vue-property-decorator'</span>;
+<span class="hljs-keyword">import</span> &#123; myLib &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">'./lib/myLib.umd.min.js'</span>;
+@Component(&#123;
+  components: &#123;
+    myLib: myLib,
+  &#125;,
+&#125;)
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Vue</span> </span>&#123;
+
+&#125;
+&lt;<span class="hljs-regexp">/script&gt;</span></code></pre>
+<h5 id="尴尬-布局失控了，疯狂报错了😥"><a href="#尴尬-布局失控了，疯狂报错了😥" class="headerlink" title="尴尬~布局失控了，疯狂报错了😥"></a>尴尬~布局失控了，疯狂报错了😥</h5><h4 id="5-解决问题"><a href="#5-解决问题" class="headerlink" title="#5 解决问题"></a>#5 解决问题</h4><h5 id="问题一：丢失css样式"><a href="#问题一：丢失css样式" class="headerlink" title="问题一：丢失css样式"></a>问题一：丢失css样式</h5><p>手动导入构建后的css文件，也可以构建时通过在 vue.config.js 中设置 <code>css: { extract: false }</code>强制内联</p>
+<blockquote>
+<p>如果你在开发一个库或多项目仓库 (monorepo)，请注意导入 CSS 是具有副作用的。请确保在 package.json 中移除 “sideEffects”: false，否则 CSS 代码块会在生产环境构建时被 webpack 丢掉。</p>
+</blockquote>
+<pre><code class="hljs javascript"><span class="hljs-keyword">import</span> <span class="hljs-string">'myLib/lib/myLib.css'</span>;</code></pre>
+<h5 id="问题二：vuex数据初始化失败"><a href="#问题二：vuex数据初始化失败" class="headerlink" title="问题二：vuex数据初始化失败"></a>问题二：vuex数据初始化失败</h5><p>排查后发现没有引入vuex依赖，导致所有store中存储的数据全部为undfined</p>
+<blockquote>
+<p>在构建 <a href="https://cli.vuejs.org/zh/guide/build-targets.html#web-components-%E7%BB%84%E4%BB%B6" target="_blank" rel="noopener">Web Components 组件</a>或<a href="https://cli.vuejs.org/zh/guide/build-targets.html#%E5%BA%93" target="_blank" rel="noopener">库</a>时，入口点不是 main.js ，而是 entry-wc.js 文件，因此，要在 Web Components 组件的目标中使用 vuex ，你需要在 App.vue 中初始化存储 (store):</p>
+</blockquote>
+<pre><code class="hljs javascript"><span class="hljs-keyword">import</span> store <span class="hljs-keyword">from</span> <span class="hljs-string">'./store'</span>
+
+<span class="hljs-comment">// ...</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> &#123;
+  store,
+  name: <span class="hljs-string">'App'</span>,
+  <span class="hljs-comment">// ...</span>
+&#125;</code></pre>
+<h5 id="开始解决问题"><a href="#开始解决问题" class="headerlink" title="开始解决问题"></a>开始解决问题</h5><p>更新App.vue文件并手动挂载store：</p>
+<pre><code class="hljs javascript">&lt;template&gt;
+  &lt;div id=<span class="hljs-string">"app"</span>&gt;
+    &lt;myLib /&gt;
+  &lt;<span class="hljs-regexp">/div&gt;</span>
+<span class="hljs-regexp">&lt;/</span>template&gt;
+&lt;script&gt;
+<span class="hljs-keyword">import</span> <span class="hljs-string">'element-ui/lib/theme-chalk/index.css'</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">'@/styles/index.scss'</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">'@/styles/element-variables.scss'</span>
+<span class="hljs-keyword">import</span> store <span class="hljs-keyword">from</span> <span class="hljs-string">'./store'</span>
+<span class="hljs-keyword">import</span> myLib <span class="hljs-keyword">from</span> <span class="hljs-string">'./views/myLib'</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> &#123;
+  store,
+  components: &#123; myLib &#125;
+&#125;
+&lt;<span class="hljs-regexp">/script&gt;</span></code></pre>
+<p>修改构建命令：</p>
+<pre><code class="hljs javascript">vue-cli-service build --target lib --name myLib --dest lib src/App.vue</code></pre>
+<p>重新引入测试：</p>
+<pre><code class="hljs javascript">&lt;template&gt;
+  &lt;div&gt;
+    &lt;myLib /&gt;
+  &lt;<span class="hljs-regexp">/div&gt;</span>
+<span class="hljs-regexp">&lt;/</span>template&gt;
+&lt;script&gt;
+<span class="hljs-keyword">import</span> &#123; Vue, Component&#125; <span class="hljs-keyword">from</span> <span class="hljs-string">'vue-property-decorator'</span>;
+<span class="hljs-keyword">import</span> &#123; myLib &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">'./lib/myLib.umd.min.js'</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">'./lib/myLib.css'</span>;
+@Component(&#123;
+  components: &#123;
+    myLib: myLib,
+  &#125;,
+&#125;)
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Vue</span> </span>&#123;
+
+&#125;
+&lt;<span class="hljs-regexp">/script&gt;</span></code></pre>
+<h5 id="测试成功！✨"><a href="#测试成功！✨" class="headerlink" title="测试成功！✨"></a>测试成功！✨</h5><h3 id="npm包发布"><a href="#npm包发布" class="headerlink" title="npm包发布"></a>npm包发布</h3><h4 id="1-更改入口文件"><a href="#1-更改入口文件" class="headerlink" title="#1 更改入口文件"></a>#1 更改入口文件</h4><p>将 package.json 的 “main”: “dist/index.js”, 入口文件修改为 <code>&quot;main&quot;:&quot;lib/myLib.umd.min.js&quot;</code>。</p>
+<h4 id="2-简化构建命令"><a href="#2-简化构建命令" class="headerlink" title="#2 简化构建命令"></a>#2 简化构建命令</h4><p>在 package.json 中添加快捷语法，将 <code>&quot;vue-cli-service build --target lib --name myLib --dest lib src/App.vue&quot;</code> 命令简化为lib。</p>
+<pre><code class="hljs javascript">#npm run lib 构建
+
+<span class="hljs-string">"scripts"</span>: &#123;
+    <span class="hljs-string">"build"</span>: <span class="hljs-string">"vue-cli-service build"</span>,
+    <span class="hljs-string">"lint"</span>: <span class="hljs-string">"vue-cli-service lint"</span>,
+    <span class="hljs-string">"dev"</span>: <span class="hljs-string">"vue-cli-service serve"</span>,
+    <span class="hljs-string">"lib"</span>:<span class="hljs-string">"vue-cli-service build --target lib --name myLib --dest lib src/App.vue"</span>,
+  &#125;,</code></pre>
+<h4 id="3-更改包权限"><a href="#3-更改包权限" class="headerlink" title="#3 更改包权限"></a>#3 更改包权限</h4><p>设置 package.json 的<code>&quot;private&quot;: false</code>。</p>
+<h4 id="4-登陆npm账号"><a href="#4-登陆npm账号" class="headerlink" title="#4 登陆npm账号"></a>#4 登陆npm账号</h4><ul>
+<li><p>如果没有账号先去官网注册<a href="https://www.npmjs.com/" target="_blank" rel="noopener">npm</a></p>
+</li>
+<li><p>在终端输入<code>npm login</code>，然后输入你创建的账号，密码和邮箱登陆</p>
+<h4 id="5-发布"><a href="#5-发布" class="headerlink" title="#5 发布"></a>#5 发布</h4></li>
+<li><p><code>npm publish</code>发布–注意每次发布更新要修改package.json中的版本号</p>
+</li>
+<li><p>在项目中<code>npm install</code> 已发布的包名，导入使用</p>
+<h4 id="6-删除"><a href="#6-删除" class="headerlink" title="#6 删除"></a>#6 删除</h4></li>
+<li><p>删除指定版本：<code>npm unpublish</code> 包名@版本号</p>
+</li>
+<li><p>删除整个包： <code>npm unpublish</code> 包名 –force</p>
+<h3 id="npm-Organization"><a href="#npm-Organization" class="headerlink" title="npm Organization"></a>npm Organization</h3><p>和同事一起给team新建了一个组织，现在我们要将这个包发布到组织下便于共同维护：</p>
+<h4 id="1-注册组织"><a href="#1-注册组织" class="headerlink" title="#1 注册组织"></a>#1 注册组织</h4></li>
+<li><p>去官网上创建我们的Organization <a href="https://docs.npmjs.com/creating-and-publishing-an-org-scoped-package" target="_blank" rel="noopener">官方步骤</a></p>
+<h4 id="2-初始化"><a href="#2-初始化" class="headerlink" title="#2 初始化"></a>#2 初始化</h4></li>
+<li><p><code>npm init --scope=&lt;org_name&gt;</code></p>
+</li>
+<li><p>修改package.json里面的name字段为<code>@org_name/&lt;pkg_name&gt;</code></p>
+</li>
+<li><p>公开包发布：<code>npm publish --access public</code> </p>
+<h4 id="3-验证"><a href="#3-验证" class="headerlink" title="#3 验证"></a>#3 验证</h4></li>
+<li><p>登陆官网就可以在组织下看到发布的包的信息啦！</p>
+</li>
+</ul>
+<h3 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h3><p>欢迎纠错，看到会及时修改哒！❤<br>温故而知新，希望我们都可以保持本心，念念不忘，必有回响。</p>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E6%8A%80%E6%9C%AFblog/">技术blog</a>
+                    
+                      <a class="hover-with-bg" href="/categories/%E6%8A%80%E6%9C%AFblog/Vue/">Vue</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Vue/">Vue</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" target="_blank" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/2020/09/13/technology/eventloop/">
+                        <span class="hidden-mobile">Node.js VS 浏览器以及事件循环机制</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+    <!-- APlayer 音乐播放器 -->
+    <div id="aplayer"></div>
+    <script defer src="https://cdn.staticfile.org/aplayer/1.10.1/APlayer.min.js" ></script>
+<link  rel="stylesheet" href="https://cdn.staticfile.org/aplayer/1.10.1/APlayer.min.css" />
+<script type="text/javascript">
+  var oldLoadAp = window.onload;
+  window.onload = function () {
+    oldLoadAp && oldLoadAp();
+
+    new APlayer({
+      container: document.getElementById('aplayer'),
+      fixed: true,
+      autoplay: 'false' === 'true',
+      loop: 'all',
+      order: 'random',
+      theme: '#b7daff',
+      preload: 'none',
+      audio: [{"name":"海底","artist":"三块木头","url":"/songs/三块木头 - 海底.mp3","cover":"/img/cover.png"},{"name":"ハレハレヤ（朗朗晴天）","artist":"猫瑾","url":"/songs/猫瑾 - ハレハレヤ（朗朗晴天）.mp3","cover":"/img/cover.png"},{"name":"ぼくら（城镇青年ED）","artist":"玖肆仟","url":"/songs/玖肆仟 - ぼくら（城镇青年ED）.mp3","cover":"/img/cover.png"}]
+    });
+  }
+</script>
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <span>&</span>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+      <i class="iconfont icon-love"></i>
+      <span>by 芋头</span>
+      <!-- <span id="hitokoto">:D 获取中...</span> -->
+    </div>
+    <div>
+      <span id="timeDate">载入天数...</span>
+      <span id="times">载入时分秒...</span>
+    </div>
+    
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/main.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: 'article.markdown-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "vue-cli3发布一个npm包（踩坑指南）&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+  // fetch('https://v1.hitokoto.cn')
+  //   .then(response => response.json())
+  //   .then(data => {
+  //     const hitokoto = document.getElementById('hitokoto')
+  //     hitokoto.innerText = data.hitokoto
+  //   })
+  //   .catch(console.error)
+  var now = new Date();
+  function createtime() {
+    var grt = new Date("07/28/2020 00:00:00");//此处修改你的建站时间或者网站上线时间
+    now.setTime(now.getTime() + 250);
+    days = (now - grt) / 1000 / 60 / 60 / 24;
+    dnum = Math.floor(days);
+    hours = (now - grt) / 1000 / 60 / 60 - (24 * dnum);
+    hnum = Math.floor(hours);
+    if (String(hnum).length == 1) {
+      hnum = "0" + hnum;
+    }
+    minutes = (now - grt) / 1000 / 60 - (24 * 60 * dnum) - (60 * hnum);
+    mnum = Math.floor(minutes);
+    if (String(mnum).length == 1) {
+      mnum = "0" + mnum;
+    }
+    seconds = (now - grt) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+    snum = Math.round(seconds);
+    if (String(snum).length == 1) {
+      snum = "0" + snum;
+    }
+    document.getElementById("timeDate").innerHTML = "按时长大的第&nbsp" + dnum + "&nbsp天";
+    document.getElementById("times").innerHTML = hnum + "&nbsp小时&nbsp" + mnum + "&nbsp分&nbsp" + snum + "&nbsp秒";
+  }
+  setInterval("createtime()", 250);
+</script>
+
+</body>
+</html>

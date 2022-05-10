@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.ico">
+  <link rel="icon" type="image/png" href="/img/favicon.ico">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#705a98">
+  <meta name="description" content="">
+  <meta name="author" content="XuYuTong">
+  <meta name="keywords" content="">
+  <title>Node.js VS 浏览器以及事件循环机制 - 芋头&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+  
+
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+  
+<link rel="stylesheet" href="/css/iconfont/iconfont.css">
+
+
+
+  <script  src="/js/utils.js" ></script>
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>芋头's Blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+  <div class="mt-3 post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2020-09-13 17:00">
+      2020年9月13日 下午
+    </time>
+  </div>
+
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      5k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      118
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <blockquote>
+<p>本文主要梳理node.js，浏览器相关及Event Loop事件循环等，会持续补充更新哦！<br>首先我们要记住JS是一个单线程的语言。</p>
+</blockquote>
+<h2 id="JS同步异步"><a href="#JS同步异步" class="headerlink" title="JS同步异步"></a>JS同步异步</h2><ul>
+<li><strong>同步阻塞</strong></li>
+<li><strong>异步非阻塞：</strong>在涉及需要等待的操作，我们选择让程序继续运行，在等待时间结束的时候，通知一下我们的程序内容执行完毕，你可以操作这些资源了，这段等待时间并不影响你程序的继续执行，只是在未来的某个时间段（不确定），有一个操作一定会执行。</li>
+</ul>
+<h3 id="JS的异步方案演进史"><a href="#JS的异步方案演进史" class="headerlink" title="JS的异步方案演进史"></a>JS的异步方案演进史</h3><p>Raw Callback Style -&gt; Promise Callback Style -&gt; Generator Callback Style -&gt; Async/Await Callback<br /><strong>任务队列</strong>：先进先出</p>
+<h2 id="JS-Engine-和-JS-Runtime"><a href="#JS-Engine-和-JS-Runtime" class="headerlink" title="JS Engine 和 JS Runtime"></a>JS Engine 和 JS Runtime</h2><ul>
+<li><strong>Engine（执行引擎）：</strong>如V8 Engine，V8 实现并提供了 ECMAScript 标准中的所有数据类型、操作符、对象和方法（注意并没有 DOM）。<strong>Event Loop</strong> 是属于 <strong>JavaScript Runtime</strong> 的，是由宿主环境提供的（比如浏览器，node）</li>
+<li><strong>Runtime（执行环境）：</strong>Chrome 提供了 window、DOM，而 Node.js 则是 require、process 等等。</li>
+</ul>
+<h2 id="JS执行机制"><a href="#JS执行机制" class="headerlink" title="JS执行机制"></a>JS执行机制</h2><p><strong>事件循环（Event Loop）</strong>是j<strong>s实现异步的一种方法</strong>，也是js的<strong>执行机制</strong>。</p>
+<ul>
+<li>同步和异步任务分别进入不同的执行”场所”，同步的进入主线程，异步的进入Event Table并注册函数。</li>
+<li>当指定的事情完成时，Event Table会将这个函数移入Event Queue。</li>
+<li>主线程内的任务执行完毕为空，会去Event Queue读取对应的函数，进入主线程执行。</li>
+<li>上述过程会不断重复，也就是常说的Event Loop(事件循环)。</li>
+</ul>
+<h3 id="怎么知道主线程执行栈为空"><a href="#怎么知道主线程执行栈为空" class="headerlink" title="怎么知道主线程执行栈为空"></a><strong>怎么知道主线程执行栈为空</strong></h3><p>js引擎存在monitoring process进程，会持续不断的检查主线程执行栈是否为空，一旦为空，就会去Event Queue那里检查是否有等待被调用的函数。</p>
+<h3 id="执行规则"><a href="#执行规则" class="headerlink" title="执行规则"></a><strong>执行规则</strong></h3><ul>
+<li>首先在执行栈（call stack）中的内容执行完毕清空后，会在事件队列（Event queue）检查一下哪些是宏任务哪些是微任务，然后执行所有的微任务，然后执行一个宏任务，之后再次执行所有的微任务。也就是说在主线程（main thread）任务执行完毕后会把任务队列中的微任务全部执行，然后再执行一个宏任务，这个宏任务执行完再次检查队列内部的微任务，有就全部执行没有就再执行一个宏任务。</li>
+<li>JS是单线程但是浏览器是多线程。你的异步任务是浏览器开启对应的线程来执行的，最后放入JS引擎中进行执行。</li>
+<li>所以在执行定时器、事件、ajax这些异步事件的时候是另外三个线程在执行代码，并不是JS引擎在做事情，在这些线程达到某一特定事件把任务放入JS引擎的线程中，同时GUI线程（渲染界面HTMl的线程）与JS线程是互斥的，在JS引擎执行时GUI线程会被冻结、挂起。</li>
+</ul>
+<h3 id="浏览器主线程常驻线程"><a href="#浏览器主线程常驻线程" class="headerlink" title="浏览器主线程常驻线程"></a>浏览器主线程常驻线程</h3><ul>
+<li>GUI 渲染线程<ul>
+<li>绘制页面，解析 HTML、CSS，构建 DOM 树，布局和绘制等</li>
+<li>页面重绘和回流</li>
+<li>与 JS 引擎线程互斥，也就是所谓的 JS 执行阻塞页面更新</li>
+</ul>
+</li>
+<li>JS 引擎线程<ul>
+<li>负责 JS 脚本代码的执行</li>
+<li>负责执行准备好待执行的事件，即定时器计数结束，或异步请求成功并正确返回的事件</li>
+<li>与 GUI 渲染线程互斥，执行时间过长将阻塞页面的渲染</li>
+</ul>
+</li>
+<li>事件触发线程<ul>
+<li>负责将准备好的事件交给 JS 引擎线程执行</li>
+<li>多个事件加入任务队列的时候需要排队等待(JS 的单线程)</li>
+</ul>
+</li>
+<li>定时器触发线程<ul>
+<li>负责执行异步的定时器类的事件，如 setTimeout、setInterval</li>
+<li>定时器到时间之后把注册的回调加到任务队列的队尾</li>
+</ul>
+</li>
+<li>HTTP 请求线程<ul>
+<li>负责执行异步请求</li>
+<li>主线程执行代码遇到异步请求的时候会把函数交给该线程处理，当监听到状态变更事件，如果有回调函数，该线程会把回调函数加入到任务队列的队尾等待执行</li>
+</ul>
+</li>
+</ul>
+<h3 id="宏任务和微任务"><a href="#宏任务和微任务" class="headerlink" title="宏任务和微任务"></a>宏任务和微任务</h3><ul>
+<li><strong>macro-task(宏任务)</strong>：包括整体代码script，setTimeout，setInterval，I/O、UI Rendering等</li>
+<li><strong>micro-task(微任务)</strong>：Promise.then catch finally(注意不是说 Promise，new promise直接执行)，process.nextTick，MutationObserver</li>
+</ul>
+<h4 id="setTimeout-fn-0"><a href="#setTimeout-fn-0" class="headerlink" title="setTimeout(fn,0)"></a>setTimeout(fn,0)</h4><p>指定某个任务在主线程最早可得的空闲时间执行，意思就是不用再等多少秒了，只要主线程执行栈内的同步任务全部执行完成，栈为空就马上执行。<strong>（关于setTimeout要补充的是，即便主线程为空，0毫秒实际上也是达不到的。根据HTML的标准，最低是4毫秒。）</strong></p>
+<h4 id="setInterval-fn-0"><a href="#setInterval-fn-0" class="headerlink" title="setInterval(fn,0)"></a>setInterval(fn,0)</h4><p>会每隔指定的时间将注册的函数置入Event Queue，如果前面的任务耗时太久，那么同样需要等待。每过ms秒，会有fn进入Event Queue。一旦setInterval的<strong>回调函数fn执行时间超过了延迟时间ms，那么就完全看不出来有时间间隔了</strong>。</p>
+<h4 id="requestAnimationFrame"><a href="#requestAnimationFrame" class="headerlink" title="requestAnimationFrame"></a>requestAnimationFrame</h4><p><strong>请求动画帧，是一个宏任务，</strong>html5 提供的一个专门用于请求动画的API，相比起setTimeout由系统决定回调函数的执行时机。60Hz的刷新频率，那么每次刷新的间隔中会执行一次回调函数，不会引起丢帧，不会卡顿。</p>
+<h4 id="Promise与process-nextTick-callback"><a href="#Promise与process-nextTick-callback" class="headerlink" title="Promise与process.nextTick(callback)"></a>Promise与process.nextTick(callback)</h4><p>process.nextTick(callback):类似node.js版的”setTimeout”，在事件循环的下一次循环中调用 callback 回调函数。<br />不同类型的任务会进入对应的Event Queue，比如setTimeout和setInterval会进入相同的Event Queue。</p>
+<h3 id="执行和运行的区别"><a href="#执行和运行的区别" class="headerlink" title="执行和运行的区别"></a><strong>执行和运行的区别</strong></h3><p>执行和运行有很大的区别，javascript在不同的环境下，比如node，浏览器，Ringo等等，执行方式是不同的。而运行大多指javascript解析引擎，是统一的。</p>
+<h3 id="一些特殊的点"><a href="#一些特殊的点" class="headerlink" title="一些特殊的点"></a>一些特殊的点</h3><ul>
+<li>async 隐式返回 Promise 作为结果，执行完 await 之后直接跳出 async 函数，让出执行的所有权，当前任务的其他代码执行完之后再次获得执行权进行执行</li>
+<li>立即 resolve 的 Promise 对象，是在本轮”事件循环”的结束时执行，而不是在下一轮”事件循环”的开始时</li>
+<li>在一轮event loop中多次修改同一dom，只有最后一次会进行绘制。</li>
+<li>渲染更新（Update the rendering）会在event loop中的tasks和microtasks完成后进行，但并不是每轮event loop都会更新渲染，这取决于是否修改了dom和浏览器觉得是否有必要在此时立即将新状态呈现给用户。如果在一帧的时间内（时间并不确定，因为浏览器每秒的帧数总在波动，16.7ms只是估算并不准确）修改了多处dom，浏览器可能将变动积攒起来，只进行一次绘制，这是合理的。</li>
+<li>如果希望在每轮event loop都即时呈现变动，可以使用requestAnimationFrame。</li>
+</ul>
+<h2 id="Node下的-Event-Loop"><a href="#Node下的-Event-Loop" class="headerlink" title="Node下的 Event Loop"></a>Node下的 Event Loop</h2><p>基于libuv实现，而libuv是 Node 的新跨平台抽象层，libuv使用异步IO事件驱动的编程方式，核心是提供i/o的事件循环和异步回调。libuv的API包含有时间，非阻塞的网络，异步文件操作，子进程等等。</p>
+<h3 id="六个阶段"><a href="#六个阶段" class="headerlink" title="六个阶段"></a>六个阶段</h3><ul>
+<li><strong>timers</strong>：执行setTimeout() 和 setInterval()中到期的callback。</li>
+<li><strong>pending callback</strong>: 上一轮循环中有少数的I/O callback会被延迟到这一轮的这一阶段执行</li>
+<li><strong>idle, prepare</strong>：仅内部使用</li>
+<li><strong>poll</strong>: 最为重要的阶段，执行I/O callback，在适当的条件下会阻塞在这个阶段</li>
+<li><strong>check</strong>: 执行setImmediate的callback</li>
+<li><strong>close callbacks</strong>: 执行close事件的callback，例如socket.on(‘close’[,fn])、http.server.on(‘close, fn)</li>
+</ul>
+<h2 id="Node与浏览器的-Event-Loop-差异"><a href="#Node与浏览器的-Event-Loop-差异" class="headerlink" title="Node与浏览器的 Event Loop 差异"></a>Node与浏览器的 Event Loop 差异</h2><ul>
+<li>浏览器环境下，microtask的任务队列是每个macrotask执行完之后执行。</li>
+<li>而在Node.js中，microtask会在事件循环的各个阶段之间执行，也就是一个阶段执行完毕，就会去执行microtask队列的任务。</li>
+</ul>
+<br />
+> node.js 是⼀个 JS 的服务端运⾏环境，简单的来说，是在 JS 语⾔规范的基础上，封装了⼀些服务端的运⾏时 对象，让我们能够简单实现⾮常多的业务功能。
+> 基于 JS 语法增加与操作系统之间的交互。
+
+<h2 id="Node的简单介绍"><a href="#Node的简单介绍" class="headerlink" title="Node的简单介绍"></a>Node的简单介绍</h2><h3 id="底层依赖"><a href="#底层依赖" class="headerlink" title="底层依赖"></a>底层依赖</h3><p>node.js 的主要依赖⼦模块有以下内容：</p>
+<ul>
+<li>V8 引擎：主要是 JS 语法的解析，有了它才能识别JS语法</li>
+<li>libuv: c 语⾔实现的⼀个⾼性能异步⾮阻塞 IO 库，⽤来实现 node.js 的事件循环</li>
+<li>http-parser/llhttp: 底层处理 http 请求，处理报⽂，解析请求包等内容</li>
+<li>openssl: 处理加密算法，各种框架运⽤⼴泛</li>
+<li>zlib: 处理压缩等内容</li>
+</ul>
+<h3 id="常见内置模块"><a href="#常见内置模块" class="headerlink" title="常见内置模块"></a>常见内置模块</h3><ul>
+<li>*<em>fs: *</em>⽂件系统，能够读取写⼊当前安装系统环境中硬盘的数据</li>
+<li><strong>path:</strong> 路径系统，能够处理路径之间的问题</li>
+<li><strong>crypto:</strong> 加密相关模块，能够以标准的加密⽅式对我们的内容进⾏加解密</li>
+<li><strong>dns:</strong> 处理 dns 相关内容，例如我们可以设置 dns 服务器等等</li>
+<li>*<em>http: *</em>设置⼀个 http 服务器，发送 http 请求，监听响应等等</li>
+<li><strong>readline:</strong> 读取 stdin 的⼀⾏内容，可以读取、增加、删除我们命令⾏中的内容</li>
+<li><strong>os:</strong> 操作系统层⾯的⼀些 api，例如告诉你当前系统类型及⼀些参数</li>
+<li><strong>vm:</strong> ⼀个专⻔处理沙箱的虚拟机模块，底层主要来调⽤ v8 相关 api 进⾏代码解析。</li>
+</ul>
+<h3 id="Buffer-缓冲"><a href="#Buffer-缓冲" class="headerlink" title="Buffer 缓冲"></a>Buffer 缓冲</h3><p>Buffer 类，用来创建一个专门存放二进制数据的缓存区。</p>
+<ul>
+<li>Buffer 是 UInt8Array </li>
+<li>是数组，且每个item的有效范围是 0~255（无符号8位）</li>
+<li>详细api可查 <a href="http://nodejs.cn/api/buffer.html" target="_blank" rel="noopener">http://nodejs.cn/api/buffer.html</a><pre><code class="hljs javascript">Buffer.from([<span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>]); <span class="hljs-comment">//Buffer.from() 接口创建Buffer对象（传入的array的元素只能是数字，不然就会自动被0覆盖）</span>
+Buffer.from([<span class="hljs-number">257</span>, <span class="hljs-number">257.5</span>, <span class="hljs-number">-255</span>, <span class="hljs-string">'1'</span>]); <span class="hljs-comment">//都是1</span>
+Buffer.from(<span class="hljs-string">'abcd'</span>); <span class="hljs-comment">//utf8编码转换 &lt;Buffer 61 62 63 64&gt;</span>
+<span class="hljs-keyword">const</span> bf = Buffer.alloc(<span class="hljs-number">256</span>); <span class="hljs-comment">//创建一个长度为 256、且用 0 填充的 Buffer</span>
+<span class="hljs-keyword">const</span> len = buf.write(<span class="hljs-string">"www.baidu.com"</span>); <span class="hljs-comment">//写入，返回实际写入的大小。如果 buffer 空间不足， 则只会写入部分字符串。</span>
+<span class="hljs-keyword">const</span> str1 = buf.toString(<span class="hljs-string">'utf8'</span>) <span class="hljs-comment">//// 使用 'utf8' 编码, 并输出: www.baidu.com</span>
+<span class="hljs-keyword">const</span> str2 = buf.toString(<span class="hljs-string">'utf8'</span>,<span class="hljs-number">0</span>,<span class="hljs-number">9</span>) <span class="hljs-comment">//// 使用 'utf8' 编码, 并输出: www.baidu</span></code></pre>
+
+</li>
+</ul>
+<h3 id="EventEmitter-事件"><a href="#EventEmitter-事件" class="headerlink" title="EventEmitter 事件"></a>EventEmitter 事件</h3><p>events 模块只提供了一个对象： events.EventEmitter。EventEmitter 的核心就是事件触发与事件监听器功能的封装。</p>
+<ul>
+<li><strong>on方法，</strong>注册事件回调</li>
+<li><strong>emit方法，</strong>手动触发事件</li>
+<li>详细api可查** **<a href="http://nodejs.cn/api/events.html" target="_blank" rel="noopener">http://nodejs.cn/api/events.html</a><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> EventEmitter = <span class="hljs-built_in">require</span>(<span class="hljs-string">'events'</span>);
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyEventEmitter</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">EventEmitter</span> </span>&#123;&#125;
+<span class="hljs-keyword">const</span> myEventEmitter = <span class="hljs-keyword">new</span> MyEventEmitter();
+myEventEmitter.on(<span class="hljs-string">'ping'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>&#123;
+ <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'pong'</span>);
+&#125;)
+myEventEmitter.emit(<span class="hljs-string">'ping'</span>);</code></pre>
+
+</li>
+</ul>
+<h3 id="Stream-流"><a href="#Stream-流" class="headerlink" title="Stream 流"></a>Stream 流</h3><p>Stream 是一个抽象接口，Node 中有很多对象实现了这个接口。例如，对http 服务器发起请求的request 对象就是一个 Stream，还有stdout（标准输出）</p>
+<ul>
+<li>Stream 有四种流类型<ul>
+<li><strong>Readable</strong> - 可读操作</li>
+<li><strong>Writable</strong> - 可写操作</li>
+<li><strong>Duplex</strong> - 可读可写操作</li>
+<li><strong>Transform</strong> - 操作被写入数据，然后读出结果</li>
+</ul>
+</li>
+<li>Stream 对象本身就是一个 EventEmitter ，常用事件有<ul>
+<li><strong>data</strong> - 当有数据可读时触发。<br /></li>
+<li><strong>end</strong> - 没有更多的数据可读时触发。<br /></li>
+<li><strong>error</strong> - 在接收和写入过程中发生错误时触发。<br /></li>
+<li><strong>finish</strong> - 所有数据已被写入到底层系统时触发。</li>
+</ul>
+</li>
+<li>Stream 内部含有 Buffer</li>
+<li>Stream优势：只会先读文件需要的一部分，内存损耗较小</li>
+<li>详细api可查** **<a href="http://nodejs.cn/api/stream.html" target="_blank" rel="noopener">http://nodejs.cn/api/stream.html</a><pre><code class="hljs javascript"><span class="hljs-keyword">var</span> readerStream = fs.createReadStream(<span class="hljs-string">'input.txt'</span>,&#123;<span class="hljs-attr">start</span>:<span class="hljs-number">50</span>,<span class="hljs-attr">end</span>:<span class="hljs-number">99</span>&#125;); <span class="hljs-comment">//读取一部分</span></code></pre>
+
+</li>
+</ul>
+<h3 id="常见全局对象"><a href="#常见全局对象" class="headerlink" title="常见全局对象"></a>常见全局对象</h3><ul>
+<li>setTimeout 创建定时</li>
+<li>clearTimeout(t) 停止定时</li>
+<li>setInterval 创建轮询</li>
+<li>clearInterval(t) 停止轮询</li>
+<li>console 打印</li>
+<li>process 进程</li>
+</ul>
+<h3 id="模块全局对象"><a href="#模块全局对象" class="headerlink" title="模块全局对象"></a>模块全局对象</h3><p>模块加载时注入</p>
+<ul>
+<li>__filename 模块文件的路径</li>
+<li>__dirname  当前执行脚本所在的目录</li>
+<li>exports 输出</li>
+<li>module 模块</li>
+<li>require  请求</li>
+</ul>
+<h3 id="npm-node-package-manager"><a href="#npm-node-package-manager" class="headerlink" title="npm(node package manager)"></a>npm(node package manager)</h3><ul>
+<li>node.js 内置的用于安装和发布符合 node.js 标准的模块的⼀款⼯具，从⽽实现社区共建的⽬的繁荣整个社区。</li>
+<li>npx 是 npm@5 之后新增的⼀个命令，它使得我们可以 在<strong>不安装模块</strong>到当前环境的前提下，使⽤⼀些 <strong>cli</strong> 功能，每次调用都会使用最新的版本。<pre><code class="hljs javascript"># 全局安装了 vue
+npm i -g vue
+vue init webpack test
+# ⽆论是项⽬中还是全局都没有安装 vue (但实际上是安装了的，但表现确实像没有安装)
+npx vue test</code></pre>
+
+</li>
+</ul>
+<h4 id="发布一个npm包"><a href="#发布一个npm包" class="headerlink" title="发布一个npm包"></a>发布一个npm包</h4><ul>
+<li><p>安装webpack简易框架（这里以发布vue插件为例）</p>
+<pre><code class="hljs javascript">npm install -g @vue/cli-init <span class="hljs-comment">//cli版本是3及以上，vue init 的运行效果将会跟 vue-cli@2.x 相同</span>
+vue init webpack-simple marquee
+<span class="hljs-comment">//安装完成目录结构</span>
+文件目录/
+├── index.html
+├── package.json
+├── README.md
+├── .babelrc
+├── .editorconfig
+├── .gitignore
+├── src
+│   ├── App.vue
+│   ├── assets
+│   │   └── logo.png
+│   └── main.js
+└── webpack.config.js</code></pre>
+</li>
+<li><p>封装Vue插件（创建一个index.js）</p>
+<pre><code class="hljs javascript"><span class="hljs-comment">//在APP.vue中查看效果</span>
+npm install
+npm run dev</code></pre>
+</li>
+<li><p>在index.js中export封装好的Vue插件</p>
+</li>
+<li><p>修改webpack.config.js</p>
+<pre><code class="hljs javascript"><span class="hljs-keyword">const</span> NODE_ENV = process.env.NODE_ENV;
+<span class="hljs-built_in">module</span>.exports = &#123;
+  entry: NODE_ENV == <span class="hljs-string">'development'</span> ? <span class="hljs-string">'./src/main.js'</span> : <span class="hljs-string">'./src/marquee/index.js'</span>,
+  output: &#123;
+    path: path.resolve(__dirname, <span class="hljs-string">'./dist'</span>),
+    publicPath: <span class="hljs-string">'/dist/'</span>,
+    filename: <span class="hljs-string">'marquee.js'</span>, <span class="hljs-comment">//输出文件名</span>
+    library: <span class="hljs-string">'marquee'</span>, <span class="hljs-comment">// 指定的就是你使用require时的模块名</span>
+    libraryTarget: <span class="hljs-string">'umd'</span>, <span class="hljs-comment">// 指定输出格式， UMD 同时支持两种执行环境：node环境、浏览器环境。</span>
+    umdNamedDefine: <span class="hljs-literal">true</span> <span class="hljs-comment">// 会对 UMD 的构建过程中的 AMD 模块进行命名。否则就使用匿名的 define</span>
+  &#125;,
+&#125;</code></pre>
+</li>
+<li><p>打包</p>
+<pre><code class="hljs javascript">npm run build
+<span class="hljs-comment">//出现dist文件夹</span></code></pre>
+</li>
+<li><p>修改package.json</p>
+<pre><code class="hljs javascript">&#123;
+ <span class="hljs-string">"author"</span>: <span class="hljs-string">"maomincoding"</span>,  <span class="hljs-comment">//author的值为npm用户名，这里一定要注意</span>
+  <span class="hljs-string">"main"</span>: <span class="hljs-string">"dist/marquee.js"</span>, <span class="hljs-comment">//main的值为刚才打包的路径文件</span>
+  <span class="hljs-string">"license"</span>: <span class="hljs-string">"ISC"</span>, <span class="hljs-comment">//license的值按照以上即可</span>
+  <span class="hljs-string">"keywords"</span>: [<span class="hljs-string">"marquee"</span>], <span class="hljs-comment">//keywords为用户搜索的关键词</span>
+  <span class="hljs-string">"private"</span>: <span class="hljs-literal">false</span>, <span class="hljs-comment">//private设为false, 开源因此需要将这个字段改为 false</span>
+&#125;</code></pre>
+</li>
+<li><p>发包文件名单</p>
+<pre><code class="hljs javascript"><span class="hljs-comment">//npm发包默认包含的文件（不区分大小写）</span>
+package.json
+README (and its variants)
+CHANGELOG (and its variants)
+LICENSE / LICENCE
+package.json属性main指向的文件
+<span class="hljs-comment">//npm发包默认忽略的文件</span>
+.git
+CVS
+.svn
+.hg
+.lock-wscript
+.wafpickle-N
+.*.swp
+.DS_Store
+._*
+npm-debug.log
+.npmrc
+node_modules
+config.gypi
+*.orig
+package-lock.json (use shrinkwrap instead)
+<span class="hljs-comment">//发包白名单，设置package.json中的files属性</span>
+files:[<span class="hljs-string">"package.json"</span>,<span class="hljs-string">"src"</span>]
+<span class="hljs-comment">//发包黑名单,通过下面两个文件来设置忽略的文件或文件夹</span>
+.gitignore
+.npmignore
+<span class="hljs-comment">//文件设置优先级!!!</span>
+files&gt;.npmignore&gt;.gitignore</code></pre>
+</li>
+<li><p>编辑README.md</p>
+</li>
+<li><p>npm包发布</p>
+<pre><code class="hljs javascript">npm config <span class="hljs-keyword">get</span> registry //查看登录源
+npm config <span class="hljs-keyword">set</span> registry=http://registry.npmjs.org //如果不是http://registry.npmjs.org就切换一下
+npm login //登录 回车出现 Logged in as maomincoding on http://registry.npmjs.org,那么就成功了
+npm publish //成功！</code></pre>
+</li>
+<li><p>npm包撤销 ：只有在发包的24小时内才允许撤销，以后发包的时候也不能再和被撤销的包的名称和版本重复了，建议慎重！<strong>I sure hope you know what you are doing</strong></p>
+<pre><code class="hljs javascript">npm unpublish 包名 --force <span class="hljs-comment">//撤销</span></code></pre>
+</li>
+<li><p>npm包更新</p>
+<ul>
+<li>打开根目录下的package.json找到version字段 “version”:”a.b.c”<ul>
+<li>修复bug,小改动，c加1</li>
+<li>增加了新特性，但仍能向后兼容，b加1</li>
+<li>有很大的改动，无法向后兼容，a加1</li>
+</ul>
+</li>
+<li>再次发布</li>
+</ul>
+</li>
+</ul>
+<h3 id="nvm-node-version-manager"><a href="#nvm-node-version-manager" class="headerlink" title="nvm(node version manager)"></a>nvm(node version manager)</h3><p>管理 node 版本的⼀个⼯具,简单来说，就是通过将多个 node 版本安装在指定路径，然后通过 nvm 命令切换时，就会切换我们环境变量中 node 命令指定的实际执⾏的软件路径。</p>
+<h3 id="nrm-npm-registry-manager"><a href="#nrm-npm-registry-manager" class="headerlink" title="nrm(npm registry manager )"></a>nrm(npm registry manager )</h3><p>是npm的镜像源管理工具，使用这个可以快速地在 npm 源间切换。</p>
+<h3 id="服务端框架-express-koa"><a href="#服务端框架-express-koa" class="headerlink" title="服务端框架 express/koa"></a>服务端框架 express/koa</h3><p>node.js 内部有⾮常多的内置模块，其中就有 http 模块，express/koa 实际上就是 对这个 http 模块的再封装，增加了中间件策略和其他 各种路由的通⽤处理，让我们写起来更加⽅便。</p>
+<ul>
+<li>*<em>body-parser *</em>express处理body的中间件</li>
+<li><strong>cookie-parser</strong> express处理cookie的中间件</li>
+<li>中间件可以这样理解，对于需要多次书 写的业务逻辑，可以使⽤⼀种切⾯的形式，对相同逻辑进⾏通⽤处理。</li>
+<li><strong>洋葱模型：</strong>中间件线性的连贯的，自上而下（垂直）依次进行劫持。执行到next()会跳出当前继续向下一个中间件执行，结束后会返回之前中间件执行next()后面内容。</li>
+<li>koa和express在同步场景下完全相同，处理异步时koa进行rosolve能正确执行回调顺序，但express缺少这个方法，会产生一些顺序问题。</li>
+</ul>
+<h3 id="周边工具简介"><a href="#周边工具简介" class="headerlink" title="周边工具简介"></a>周边工具简介</h3><h4 id="quickjs"><a href="#quickjs" class="headerlink" title="quickjs"></a>quickjs</h4><p>quickjs 是⼀个 JS 的解析引擎，轻量代码量也不⼤，与之功能类似的就是 V8 引擎。<br />他最⼤的特点就是，⾮常⾮常轻量，这点从源码中也能提现，事实上并没有太多的代码，它的主要特点和优势：</p>
+<ul>
+<li>轻量⽽且易于嵌⼊：只需⼏个C⽂件，没有外部依赖，⼀个x86下的简单的“hello world”程序只要180KiB。</li>
+<li>具有极低启动时间的快速解释器： 在⼀台单核的台式PC上，⼤约在100秒内运⾏ECMAScript 测试套件156000次。运⾏时实例的完整⽣命周期在不到300微秒的时间内完成。</li>
+<li>⼏乎完整实现ES2019⽀持，包括： 模块，异步⽣成器和和完整Annex B⽀持 (传统的Web兼容性)。许多ES2020中带来的特性也依然会被⽀持。</li>
+<li>通过100％的ECMAScript Test Suite测试。</li>
+<li>可以将Javascript源编译为没有外部依赖的可执⾏⽂件。</li>
+</ul>
+<h4 id="deno"><a href="#deno" class="headerlink" title="deno"></a>deno</h4><p>deno 是⼀类类似于 node.js 的 JS 运⾏时环境，同时他 也是由 node.js 之⽗⼀⼿打造出来的，他和 node.js ⽐ 有什么区别呢？ </p>
+<ul>
+<li>相同点：<ul>
+<li>deno 也是基于 V8 ，上层封装⼀些系统级别的调⽤ </li>
+<li>我们的 deno 应⽤也可以使⽤ JS 开发</li>
+</ul>
+</li>
+<li>不同点：<ul>
+<li>deno 基于 rust 和 typescript 开发⼀些上层模块，所 以我们可以直接在 deno 应⽤中书写 ts </li>
+<li>deno ⽀持从 url 加载模块，同时⽀持 top level await 等特性</li>
+</ul>
+</li>
+</ul>
+<h4 id="sequelize-ORM-框架"><a href="#sequelize-ORM-框架" class="headerlink" title="sequelize ORM 框架"></a>sequelize ORM 框架</h4><p>帮助我们抹平了 底层数据库的细节，我们使⽤这类框架，就能按照它的 语法进⾏书写，最终⽣成能够应⽤于各个平台的 sql 语句。</p>
+<h4 id="pm2-服务部署"><a href="#pm2-服务部署" class="headerlink" title="pm2 服务部署"></a>pm2 服务部署</h4><p>使⽤ pm2 启动服务端、进⾏运维</p>
+<pre><code class="hljs javascript">npm install -g pm2
+pm2 start ws-server.js —name my-server
+pm2 list
+pm2 monit
+pm2 logs ws-server.js</code></pre>
+
+<h2 id="问几个问题"><a href="#问几个问题" class="headerlink" title="问几个问题"></a>问几个问题</h2><p>Node下的 Event Loop</p>
+<h3 id="Q1：下面哪几种写法可以正确导出（commonJS）"><a href="#Q1：下面哪几种写法可以正确导出（commonJS）" class="headerlink" title="Q1：下面哪几种写法可以正确导出（commonJS）"></a>Q1：下面哪几种写法可以正确导出（commonJS）</h3><pre><code class="hljs javascript"><span class="hljs-built_in">module</span>.exports=<span class="hljs-string">'hello word'</span> <span class="hljs-comment">//√</span>
+exports.key=<span class="hljs-string">'hello word'</span> <span class="hljs-comment">//√</span>
+exports=<span class="hljs-string">'hello word'</span> <span class="hljs-comment">//×</span></code></pre>
+<blockquote>
+<p>exports是module.exports值的引用，直接更改时引用地址进行了改变，不会对module.exports产生影响</p>
+</blockquote>
+<h3 id="Q2：自测一下"><a href="#Q2：自测一下" class="headerlink" title="Q2：自测一下"></a>Q2：自测一下</h3><pre><code class="hljs javascript"><span class="hljs-built_in">console</span>.log(<span class="hljs-string">'script start'</span>);
+
+setTimeout(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>&#123;
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'setTimeout'</span>);
+&#125;, <span class="hljs-number">0</span>);
+
+<span class="hljs-built_in">Promise</span>.resolve().then(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>&#123;
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'promise1'</span>);
+&#125;).then(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>&#123;
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'promise2'</span>);
+&#125;);
+<span class="hljs-built_in">console</span>.log(<span class="hljs-string">'script end'</span>);</code></pre>
+<blockquote>
+<p>script start-&gt;script end-&gt;promise1-&gt;promise2-&gt;setTimeout</p>
+</blockquote>
+<h3 id="Q3：再测一下"><a href="#Q3：再测一下" class="headerlink" title="Q3：再测一下"></a>Q3：再测一下</h3><pre><code class="hljs javascript"><span class="hljs-built_in">console</span>.log(<span class="hljs-string">'script start'</span>)
+
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">async1</span>(<span class="hljs-params"></span>) </span>&#123;
+  <span class="hljs-keyword">await</span> async2()
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'async1 end'</span>)
+&#125;
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">async2</span>(<span class="hljs-params"></span>) </span>&#123;
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'async2 end'</span>) 
+&#125;
+async1()
+
+setTimeout(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>&#123;
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'setTimeout'</span>)
+&#125;, <span class="hljs-number">0</span>)
+
+<span class="hljs-keyword">new</span> <span class="hljs-built_in">Promise</span>(<span class="hljs-function"><span class="hljs-params">resolve</span> =&gt;</span> &#123;
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Promise'</span>)
+  resolve()
+&#125;)
+  .then(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>&#123;
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'promise1'</span>)
+  &#125;)
+  .then(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>&#123;
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'promise2'</span>)
+  &#125;)
+
+<span class="hljs-built_in">console</span>.log(<span class="hljs-string">'script end'</span>)</code></pre>
+<blockquote>
+<p>script start-&gt;async2 end-&gt;Promise-&gt;script end-&gt;async1 end-&gt;promise1-&gt;promise2-&gt;setTimeout</p>
+</blockquote>
+<h2 id="巨人的肩膀"><a href="#巨人的肩膀" class="headerlink" title="巨人的肩膀"></a>巨人的肩膀</h2><ul>
+<li><a href="https://blog.csdn.net/qq_39045645/article/details/103305510" target="_blank" rel="noopener">npm发布包以及更新包还有需要注意的几点问题（这里以发布vue插件为例）</a></li>
+<li><a href="https://juejin.im/post/5b56c3586fb9a04faa79a8e0" target="_blank" rel="noopener">你好，JavaScript异步编程—- 理解JavaScript异步的美妙</a></li>
+<li><a href="https://juejin.im/post/59e85eebf265da430d571f89" target="_blank" rel="noopener">这一次，彻底弄懂 JavaScript 执行机制</a></li>
+<li><a href="https://mp.weixin.qq.com/s/aYgtL_-seRE1iOHKGSkczw" target="_blank" rel="noopener">你不知道的 Event Loop</a></li>
+<li><a href="https://juejin.im/post/5d901418518825539312f587" target="_blank" rel="noopener">【THE LAST TIME】彻底吃透 JavaScript 执行机制</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/34229323" target="_blank" rel="noopener">深入理解 JavaScript Event Loop</a></li>
+<li><a href="https://github.com/aooy/blog/issues/5" target="_blank" rel="noopener">从event loop规范探究javaScript异步及浏览器更新渲染时机</a></li>
+<li><a href="https://juejin.im/post/5c3d8956e51d4511dc72c200" target="_blank" rel="noopener">一次弄懂Event Loop（彻底解决此类面试问题）</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/54882306" target="_blank" rel="noopener">浏览器与Node的事件循环(Event Loop)有何区别?</a>**</li>
+</ul>
+<h3 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h3><p>欢迎纠错，看到会及时修改哒！❤<br>温故而知新，希望我们都可以保持本心，念念不忘，必有回响。</p>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E6%8A%80%E6%9C%AFblog/">技术blog</a>
+                    
+                      <a class="hover-with-bg" href="/categories/%E6%8A%80%E6%9C%AFblog/JS/">JS</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/JS/">JS</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" target="_blank" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/06/10/technology/vue-cli3/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">vue-cli3发布一个npm包（踩坑指南）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/2020/07/31/hello-world/">
+                        <span class="hidden-mobile">Hello World</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+    <!-- APlayer 音乐播放器 -->
+    <div id="aplayer"></div>
+    <script defer src="https://cdn.staticfile.org/aplayer/1.10.1/APlayer.min.js" ></script>
+<link  rel="stylesheet" href="https://cdn.staticfile.org/aplayer/1.10.1/APlayer.min.css" />
+<script type="text/javascript">
+  var oldLoadAp = window.onload;
+  window.onload = function () {
+    oldLoadAp && oldLoadAp();
+
+    new APlayer({
+      container: document.getElementById('aplayer'),
+      fixed: true,
+      autoplay: 'false' === 'true',
+      loop: 'all',
+      order: 'random',
+      theme: '#b7daff',
+      preload: 'none',
+      audio: [{"name":"海底","artist":"三块木头","url":"/songs/三块木头 - 海底.mp3","cover":"/img/cover.png"},{"name":"ハレハレヤ（朗朗晴天）","artist":"猫瑾","url":"/songs/猫瑾 - ハレハレヤ（朗朗晴天）.mp3","cover":"/img/cover.png"},{"name":"ぼくら（城镇青年ED）","artist":"玖肆仟","url":"/songs/玖肆仟 - ぼくら（城镇青年ED）.mp3","cover":"/img/cover.png"}]
+    });
+  }
+</script>
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <span>&</span>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+      <i class="iconfont icon-love"></i>
+      <span>by 芋头</span>
+      <!-- <span id="hitokoto">:D 获取中...</span> -->
+    </div>
+    <div>
+      <span id="timeDate">载入天数...</span>
+      <span id="times">载入时分秒...</span>
+    </div>
+    
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/main.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: 'article.markdown-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "Node.js VS 浏览器以及事件循环机制&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+  // fetch('https://v1.hitokoto.cn')
+  //   .then(response => response.json())
+  //   .then(data => {
+  //     const hitokoto = document.getElementById('hitokoto')
+  //     hitokoto.innerText = data.hitokoto
+  //   })
+  //   .catch(console.error)
+  var now = new Date();
+  function createtime() {
+    var grt = new Date("07/28/2020 00:00:00");//此处修改你的建站时间或者网站上线时间
+    now.setTime(now.getTime() + 250);
+    days = (now - grt) / 1000 / 60 / 60 / 24;
+    dnum = Math.floor(days);
+    hours = (now - grt) / 1000 / 60 / 60 - (24 * dnum);
+    hnum = Math.floor(hours);
+    if (String(hnum).length == 1) {
+      hnum = "0" + hnum;
+    }
+    minutes = (now - grt) / 1000 / 60 - (24 * 60 * dnum) - (60 * hnum);
+    mnum = Math.floor(minutes);
+    if (String(mnum).length == 1) {
+      mnum = "0" + mnum;
+    }
+    seconds = (now - grt) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+    snum = Math.round(seconds);
+    if (String(snum).length == 1) {
+      snum = "0" + snum;
+    }
+    document.getElementById("timeDate").innerHTML = "按时长大的第&nbsp" + dnum + "&nbsp天";
+    document.getElementById("times").innerHTML = hnum + "&nbsp小时&nbsp" + mnum + "&nbsp分&nbsp" + snum + "&nbsp秒";
+  }
+  setInterval("createtime()", 250);
+</script>
+
+</body>
+</html>

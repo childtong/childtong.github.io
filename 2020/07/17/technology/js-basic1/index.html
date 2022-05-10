@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.ico">
+  <link rel="icon" type="image/png" href="/img/favicon.ico">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#705a98">
+  <meta name="description" content="">
+  <meta name="author" content="XuYuTong">
+  <meta name="keywords" content="">
+  <title>从头梳理JS基础（一）数据类型及深浅拷贝 - 芋头&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+  
+
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+  
+<link rel="stylesheet" href="/css/iconfont/iconfont.css">
+
+
+
+  <script  src="/js/utils.js" ></script>
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>芋头's Blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+  <div class="mt-3 post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2020-07-17 10:00">
+      2020年7月17日 上午
+    </time>
+  </div>
+
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      4.7k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      111
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a><strong>前言</strong></h2><p>这个系列呢，说是博客其实就是笔记哈哈哈哈，感觉上班久了以后很多基础的东西反而不那么扎实了，也是进行一个梳理吧，站在巨人的肩膀上加一些自己的理解【虽然可能我会把自己绕进去，这不重要 🙈】，但我会努力讲明白哒 😘</p>
+<blockquote>
+<p>本文主要梳理JS的基本数据类型和引用数据类型，显隐式转换规则及深浅拷贝，会持续补充更新哦！</p>
+</blockquote>
+<h2 id="数据存储结构"><a href="#数据存储结构" class="headerlink" title="数据存储结构"></a>数据存储结构</h2><p>先来看看三种常见的数据存储结构：</p>
+<ul>
+<li>栈：只允许在一段进行插入或者删除操作的线性表，是一种先进后出的数据结构。（基本数据类型）</li>
+<li>队列：队列是一种先进先出（FIFO）的数据结构。（事件循环）</li>
+<li>堆：堆是基于散列算法的数据结构。（引用数据类型）</li>
+</ul>
+<h2 id="基本数据类型"><a href="#基本数据类型" class="headerlink" title="基本数据类型"></a><strong>基本数据类型</strong></h2><p>基本类型值指的是那些保存在栈内存中的简单数据段，即这种值是完全保存在内存中的一个位置。</p>
+<h3 id="Underfined-类型"><a href="#Underfined-类型" class="headerlink" title="Underfined 类型"></a><strong>Underfined 类型</strong></h3><p>只有一个值，当 var 声明变量但未初始化时，这个值为 underfined（没必要显式设置）<br />对于尚未声明过的变量，只能执行一项操作，即使用typeof操作符检测其数据类型，使用其他的操作都会报错。</p>
+<h3 id="Null-类型"><a href="#Null-类型" class="headerlink" title="Null 类型"></a><strong>Null 类型</strong></h3><p>只有一个值，空对象指针，当定义的变量将来用于保存对象时，建议初始化为 null 而不是其他值</p>
+<pre><code class="hljs javascript">underfined == <span class="hljs-literal">null</span>  <span class="hljs-comment">//true</span></code></pre>
+
+
+<h3 id="Boolean-类型"><a href="#Boolean-类型" class="headerlink" title="Boolean 类型"></a><strong>Boolean 类型</strong></h3><p>true 和 false，注意是区分大小写的，也就是说 True 和 False（以及其他混合大小写形式）都不是 Boolean 的值</p>
+<h4 id="转换规则"><a href="#转换规则" class="headerlink" title="转换规则"></a>转换规则</h4><p>我们常用的 if(变量名),表示变量不为 false,””,underfined,0 和 NaN</p>
+<pre><code class="hljs javascript"><span class="hljs-built_in">Boolean</span>(underfined) <span class="hljs-comment">//false </span>
+<span class="hljs-built_in">Boolean</span>(<span class="hljs-literal">null</span>) <span class="hljs-comment">//false </span>
+<span class="hljs-built_in">Boolean</span>(underfined) <span class="hljs-comment">//false</span>
+<span class="hljs-built_in">Boolean</span>(<span class="hljs-string">""</span>) <span class="hljs-comment">//false </span>
+<span class="hljs-built_in">Boolean</span>(<span class="hljs-number">0</span>) <span class="hljs-comment">//false </span>
+<span class="hljs-built_in">Boolean</span>(<span class="hljs-literal">NaN</span>) <span class="hljs-comment">//false </span>
+<span class="hljs-built_in">Boolean</span>(&#123;&#125;) <span class="hljs-comment">//true</span></code></pre>
+
+
+<h3 id="Number-类型"><a href="#Number-类型" class="headerlink" title="Number 类型"></a><strong>Number 类型</strong></h3><p>IEEE754 格式来表示整数和浮点数值</p>
+<h4 id="整数"><a href="#整数" class="headerlink" title="整数"></a>整数</h4><p>var num=56 //十进制56 var num=070 //八进制56 var num=0x38 //十六进制56</p>
+<ul>
+<li>八进制第一位必须是 0，后面跟八进制序列 0 到 7，如果超出了范围，则忽略前导 0，后面的数值当做十进制解析，例如：089 会被解析为 89。（八进制字面量在严格模式下是无效的，会抛出错误。）<br /></li>
+<li>十六进制前两位必须是 0x 或 0X，后跟十六进制序列 0<del>9、a</del>f（不区分大小写），如果超出了范围，则会报语法错误。<br /></li>
+</ul>
+<h4 id="浮点数"><a href="#浮点数" class="headerlink" title="浮点数"></a>浮点数</h4><p>浮点数值精度最高 17 位，计算会产生舍入误差<br />因为两次存储时的精度丢失加上一次运算时的精度丢失，最终导致了 0.1 + 0.2 !== 0.3</p>
+<h4 id="正无穷、负无穷"><a href="#正无穷、负无穷" class="headerlink" title="正无穷、负无穷"></a>正无穷、负无穷</h4><p>正数除以 0 返回正无穷(Infinity)，负数除以 0 返回负无穷(-Infinity) JavaScript 提供了 isFinite() 函数，来确定一个数是不是有穷的。例如：</p>
+<pre><code class="hljs javascript"><span class="hljs-built_in">isFinite</span>(<span class="hljs-number">500</span>)         <span class="hljs-comment">// true </span>
+<span class="hljs-built_in">isFinite</span>(<span class="hljs-literal">Infinity</span>);   <span class="hljs-comment">// false</span></code></pre>
+<h4 id="NaN"><a href="#NaN" class="headerlink" title="NaN"></a>NaN</h4><p>NaN(非数值)是一个特殊的数值，用于表示一个本来要返回数值的操作树未返回数值的情况（这样就不会抛出错误了）</p>
+<pre><code class="hljs javascript"><span class="hljs-comment">//NaN及其本身不相等 </span>
+<span class="hljs-literal">NaN</span> == <span class="hljs-literal">NaN</span> <span class="hljs-comment">//false</span></code></pre>
+<p>会出现 NaN 的几种情况：通过isNaN()函数来确定是不是 NaN</p>
+<pre><code class="hljs javascript"><span class="hljs-comment">//isNaN </span>
+<span class="hljs-built_in">isNaN</span>(<span class="hljs-number">0</span>/<span class="hljs-number">0</span>) <span class="hljs-comment">//true </span>
+<span class="hljs-built_in">isNaN</span>(<span class="hljs-literal">NaN</span>/<span class="hljs-number">10</span>) <span class="hljs-comment">//true (任何涉及NaN的操作) </span>
+<span class="hljs-built_in">isNaN</span>(<span class="hljs-number">10</span>) <span class="hljs-comment">//false </span>
+<span class="hljs-built_in">isNaN</span>(<span class="hljs-string">"blue"</span>) <span class="hljs-comment">//false </span>
+<span class="hljs-built_in">isNaN</span>(<span class="hljs-literal">true</span>) <span class="hljs-comment">//false(转换为1)</span></code></pre>
+<h4 id="转换规则-1"><a href="#转换规则-1" class="headerlink" title="转换规则"></a>转换规则</h4><pre><code class="hljs javascript"><span class="hljs-comment">//Number() </span>
+<span class="hljs-built_in">Number</span>(<span class="hljs-literal">true</span>) <span class="hljs-comment">//1 </span>
+<span class="hljs-built_in">Number</span>(<span class="hljs-literal">false</span>) <span class="hljs-comment">//0 </span>
+<span class="hljs-built_in">Number</span>(<span class="hljs-literal">null</span>) <span class="hljs-comment">//0 </span>
+<span class="hljs-built_in">Number</span>(underfined) <span class="hljs-comment">//NaN </span>
+<span class="hljs-built_in">Number</span>(<span class="hljs-string">"0011"</span>) <span class="hljs-comment">//11 </span>
+<span class="hljs-built_in">Number</span>(<span class="hljs-string">"124"</span>) <span class="hljs-comment">//124 </span>
+<span class="hljs-built_in">Number</span>(<span class="hljs-string">""</span>) <span class="hljs-comment">//0 Number("we1") //NaN </span>
+<span class="hljs-comment">//parseInt() </span>
+<span class="hljs-built_in">parseInt</span>(<span class="hljs-string">""</span>); <span class="hljs-comment">// NaN </span>
+<span class="hljs-built_in">parseInt</span>(<span class="hljs-string">"12aa"</span>); <span class="hljs-comment">// 12 </span>
+<span class="hljs-built_in">parseInt</span>(<span class="hljs-string">"13.8"</span>); <span class="hljs-comment">// 13 </span>
+<span class="hljs-comment">//parseFloat() </span>
+<span class="hljs-built_in">parseFloat</span>(<span class="hljs-string">"077.2"</span>)      <span class="hljs-comment">// 77.2 </span>
+<span class="hljs-built_in">parseFloat</span>(<span class="hljs-string">"123.11.22"</span>)   <span class="hljs-comment">// 123.11</span></code></pre>
+<h3 id="String-类型"><a href="#String-类型" class="headerlink" title="String 类型"></a><strong>String 类型</strong></h3><h4 id="字符字面量（转义序列）"><a href="#字符字面量（转义序列）" class="headerlink" title="字符字面量（转义序列）"></a>字符字面量（转义序列）</h4><p>\n 换行、\t 制表、\b 空格、\r 回车、\f 进纸、\ 斜杠、&#39; 单引号，在用单引号表示的字符串中使用、&quot; 双引号，在用双引号表示的字符串中使用</p>
+<h4 id="转换规则-2"><a href="#转换规则-2" class="headerlink" title="转换规则"></a>转换规则</h4><pre><code class="hljs javascript"><span class="hljs-comment">//toString()方法（undefined 和 null 值没有） </span>
+<span class="hljs-comment">//String() </span>
+<span class="hljs-keyword">var</span> num; 
+<span class="hljs-built_in">String</span>(<span class="hljs-number">10</span>) <span class="hljs-comment">// "20"  如果值有 toString() 方法，则调用该方法（没有参数）并返回相应的结果 </span>
+<span class="hljs-built_in">String</span>(<span class="hljs-literal">true</span>) <span class="hljs-comment">// "true" </span>
+<span class="hljs-built_in">String</span>(<span class="hljs-literal">null</span>) <span class="hljs-comment">// "null" (如果值是 null，则返回 "null") </span>
+<span class="hljs-built_in">String</span>(num) <span class="hljs-comment">// "undefined" (如果值是 undefined，则返回 "undefined")</span>
+<span class="hljs-comment">//String()基本包装类型方法</span>
+<span class="hljs-keyword">var</span> str=<span class="hljs-string">'ceshi str'</span>
+str.length <span class="hljs-comment">//字符串长度</span>
+str.trim() <span class="hljs-comment">//删除前后所有空格</span>
+str.replace() <span class="hljs-comment">//替换,默认只替换第一个，如果要全局替换匹配正则设为g</span>
+str.split() <span class="hljs-comment">//分隔，指定分隔符将一个串拆分为多个串并放入数组</span></code></pre>
+
+
+<h3 id="Synbol类型"><a href="#Synbol类型" class="headerlink" title="Synbol类型"></a><strong>Synbol类型</strong></h3><p>Symbol 是一种特殊的、不可变的数据类型，可以作为对象属性的标识符使用，表示独一无二的值。</p>
+<pre><code class="hljs javascript"><span class="hljs-keyword">let</span> a = <span class="hljs-built_in">Symbol</span>(<span class="hljs-string">'a'</span>);
+<span class="hljs-keyword">let</span> b = <span class="hljs-built_in">Symbol</span>(<span class="hljs-string">'a'</span>);
+a===b <span class="hljs-comment">//false</span></code></pre>
+
+
+<h4 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h4><ul>
+<li>Symbol函数前不能使用new命令，否则会报错。这是因为生成的 Symbol 是一个原始类型的值，不是对象。也就是说，由于 Symbol 值不是对象，所以不能添加属性。基本上，它是一种类似于字符串的数据类型。<br /></li>
+<li>定义属性的时候只能将Symbol值放在方括号里面，否则属性的键名会当做字符串而不是Symbol值。同理，在访问Symbol属性的时候也不能通过点运算符去访问，点运算符后面总是字符串，不会读取Symbol值作为标识符所指代的值.<br /></li>
+<li>常量的使用Symbol值最大的好处就是其他任何值都不可能有相同的值，用来设计switch语句是一种很好的方式。<br /></li>
+</ul>
+<h3 id="BigInt类型-第3阶段提案-暂且不论"><a href="#BigInt类型-第3阶段提案-暂且不论" class="headerlink" title="BigInt类型(第3阶段提案,暂且不论)"></a><strong>BigInt类型(第3阶段提案,暂且不论)</strong></h3><h2 id="引用数据类型"><a href="#引用数据类型" class="headerlink" title="引用数据类型"></a><strong>引用数据类型</strong></h2><p>引用类型值指的是那些保存在堆内存中的对象，所以引用类型的值保存的是一个指针，这个指针指向存储在堆中的一个对象。当查询引用类型的变量时， 先从栈中读取内存地址， 然后再通过地址找到堆中的值（按引用访问）。</p>
+<ul>
+<li>除了上面的 6 种基本数据类型外，剩下的就是引用类型了，统称为 Object 类型。细分的话，有：Object 类型、Array 类型、Date 类型、RegExp 类型、Function 类型 等。<br /></li>
+</ul>
+<h3 id="Object类型"><a href="#Object类型" class="headerlink" title="Object类型"></a><strong>Object类型</strong></h3><pre><code class="hljs javascript"><span class="hljs-keyword">var</span> obj = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Object</span>(); 
+<span class="hljs-keyword">var</span> obj = &#123;&#125;;   <span class="hljs-comment">// 优先对象字面量 </span>
+valueOf() <span class="hljs-comment">//返回对象的字符串、数值或布尔值表示（通常与toString()方法的返回值相同）。</span></code></pre>
+<h3 id="Array类型（-）"><a href="#Array类型（-）" class="headerlink" title="Array类型（*）"></a><strong>Array类型（*）</strong></h3><pre><code class="hljs javascript"><span class="hljs-keyword">var</span> arr = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>(); 
+<span class="hljs-keyword">var</span> arr = [];   <span class="hljs-comment">// 优先数组字面量</span></code></pre>
+<h4 id="转换方法"><a href="#转换方法" class="headerlink" title="转换方法"></a>转换方法</h4><pre><code class="hljs javascript"><span class="hljs-built_in">Array</span>.isArray() <span class="hljs-comment">//判断是不是数组</span>
+<span class="hljs-built_in">Array</span>.toString() <span class="hljs-comment">//逗号分隔数组为字符串</span>
+<span class="hljs-built_in">Array</span>.join(<span class="hljs-string">','</span>) <span class="hljs-comment">//指定分隔符分隔数组为字符串（默认为逗号）</span></code></pre>
+<h4 id="处理方法"><a href="#处理方法" class="headerlink" title="处理方法"></a>处理方法</h4><pre><code class="hljs javascript"><span class="hljs-built_in">Array</span>.unshift() <span class="hljs-comment">//开头添加项，return修改后长度</span>
+<span class="hljs-comment">//数组实现类似栈的行为（后进先出）</span>
+<span class="hljs-built_in">Array</span>.push() <span class="hljs-comment">//末尾添加项，return修改后长度</span>
+<span class="hljs-built_in">Array</span>.pop() <span class="hljs-comment">//末尾移除一项，return移除的项</span>
+<span class="hljs-comment">//数组实现类似队列的行为（先进先出）</span>
+<span class="hljs-built_in">Array</span>.push() <span class="hljs-comment">//末尾添加项，return修改后长度</span>
+<span class="hljs-built_in">Array</span>.shift() <span class="hljs-comment">//开头移除一项，return移除的项</span></code></pre>
+<h4 id="重排序方法"><a href="#重排序方法" class="headerlink" title="重排序方法"></a>重排序方法</h4><pre><code class="hljs javascript"><span class="hljs-built_in">Array</span>.sort() <span class="hljs-comment">//默认升序（先toString()再比较）</span>
+<span class="hljs-built_in">Array</span>.sort(comp) <span class="hljs-comment">//==&gt;comp 为比较函数，可以指定排序效果</span>
+<span class="hljs-keyword">let</span> a=[<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">11</span>,<span class="hljs-number">4</span>,<span class="hljs-number">23</span>]
+a.sort() <span class="hljs-comment">//[1, 11, 2, 23, 4]</span>
+a.sort(<span class="hljs-function">(<span class="hljs-params">a,b</span>)=&gt;</span>a-b) <span class="hljs-comment">//[1, 2, 4, 11, 23]</span>
+<span class="hljs-built_in">Array</span>.reverse() <span class="hljs-comment">//反转数组顺序</span></code></pre>
+<h4 id="操作方法"><a href="#操作方法" class="headerlink" title="操作方法"></a>操作方法</h4><pre><code class="hljs javascript"><span class="hljs-built_in">Array</span>.concat() <span class="hljs-comment">//创建副本将参数依次添加到末尾，retrun新数组</span>
+<span class="hljs-built_in">Array</span>.slice() <span class="hljs-comment">//return 从start到end（不包括end）的项</span>
+<span class="hljs-built_in">Array</span>.splice() <span class="hljs-comment">//* return删除项，不删除则为[]</span>
+<span class="hljs-comment">//参数的三种操作(起始位置，删除项数，插入值)</span>
+<span class="hljs-keyword">let</span> a=[<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">11</span>,<span class="hljs-number">4</span>,<span class="hljs-number">23</span>]
+<span class="hljs-comment">//1.删除</span>
+a.splice(<span class="hljs-number">1</span>,<span class="hljs-number">1</span>) <span class="hljs-comment">//[1, 11, 4, 23]</span>
+<span class="hljs-comment">//2.插入</span>
+a.splice(<span class="hljs-number">1</span>,<span class="hljs-number">0</span>,<span class="hljs-number">5</span>) <span class="hljs-comment">//[1, 5, 2, 11, 4, 23]</span>
+<span class="hljs-comment">//3.替换</span>
+a.splice(<span class="hljs-number">1</span>,<span class="hljs-number">1</span>,<span class="hljs-number">5</span>) <span class="hljs-comment">//[1, 5, 11, 4, 23]</span></code></pre>
+<h4 id="位置方法"><a href="#位置方法" class="headerlink" title="位置方法"></a>位置方法</h4><pre><code class="hljs javascript"><span class="hljs-built_in">Array</span>.indexOf() <span class="hljs-comment">//从头开始查找项，return项所在位置，没找到为-1（全等比较）</span>
+<span class="hljs-built_in">Array</span>.lastIndexOf() <span class="hljs-comment">//从尾部开始查找项</span></code></pre>
+<h4 id="迭代方法"><a href="#迭代方法" class="headerlink" title="迭代方法"></a>迭代方法</h4><pre><code class="hljs javascript"><span class="hljs-comment">//不会对原数组进行修改 运行函数的参为（item,index,array）</span>
+<span class="hljs-built_in">Array</span>.filter() <span class="hljs-comment">//过滤，retrun满足条件（为true）的项组成的数组</span>
+<span class="hljs-built_in">Array</span>.foreach() <span class="hljs-comment">//遍历，无return值</span>
+<span class="hljs-built_in">Array</span>.map() <span class="hljs-comment">//映射，return调用结果所组成的数组</span>
+<span class="hljs-built_in">Array</span>.every() <span class="hljs-comment">//当每一项都满足条件时，return true</span>
+<span class="hljs-built_in">Array</span>.some() <span class="hljs-comment">//当存在一项满足条件时，return true</span></code></pre>
+<h4 id="归并方法"><a href="#归并方法" class="headerlink" title="归并方法"></a>归并方法</h4><pre><code class="hljs javascript"><span class="hljs-comment">//不会对原数组进行修改 运行函数的参为（prev,cur,index,array）</span>
+<span class="hljs-built_in">Array</span>.reduce() <span class="hljs-comment">//从前遍历，迭代所有项返回一个最终值</span>
+<span class="hljs-built_in">Array</span>.reduceRight() <span class="hljs-comment">//从后向前遍历</span></code></pre>
+<h3 id="Date类型"><a href="#Date类型" class="headerlink" title="Date类型"></a><strong>Date类型</strong></h3><p>使用UTC（国际协调时间）</p>
+<pre><code class="hljs javascript"><span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>() <span class="hljs-comment">//不传参，自动获取当前日期和时间 Sun Jul 05 2020 15:20:11 GMT+0800 (中国标准时间)</span>
+<span class="hljs-built_in">Date</span>.now() <span class="hljs-comment">//retrun 调用这个方法时的日期和时间的毫秒数(时间戳) 1593933631402</span>
+(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>(<span class="hljs-number">2010</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>)).toString() <span class="hljs-comment">//Fri Jan 01 2010 00:00:00 GMT+0800 (CST)</span>
+(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>(<span class="hljs-number">2017</span>, <span class="hljs-number">4</span>, <span class="hljs-number">21</span>)).valueOf() <span class="hljs-comment">//1495296000000</span></code></pre>
+<h3 id="RegExp类型"><a href="#RegExp类型" class="headerlink" title="RegExp类型"></a><strong>RegExp类型</strong></h3><p>支持正则表达式（正则的相关规则单独整理）</p>
+<pre><code class="hljs javascript"><span class="hljs-keyword">var</span> a=<span class="hljs-regexp">/pattern/</span>flags
+<span class="hljs-comment">//pattern 匹配规则</span>
+<span class="hljs-comment">//flags 标志-表明行为 </span>
+<span class="hljs-comment">//g-全局（而非匹配第一个就停止） i-不区分大小写 m-多行（继续向下查下一行）</span>
+a.exec(str) <span class="hljs-comment">//捕获组，str为待匹配字符串，return 结果Array</span>
+a.test(str) <span class="hljs-comment">//str为待匹配字符串，若匹配return true</span></code></pre>
+<h3 id="Function类型（-）"><a href="#Function类型（-）" class="headerlink" title="Function类型（*）"></a><strong>Function类型（*）</strong></h3><p>函数没有重载，当函数重名时，取最后一次定义，建议使用函数声明来定义函数。<br /><strong>函数调用优先级</strong>：<br />new 调用 &gt; call、apply、bind 调用 &gt; 对象上的函数调用 &gt; 普通函数调用<br /><strong>函数内部属性</strong>：</p>
+<ul>
+<li>arguments:参数数组<ul>
+<li>arguments.length-传入参的个数，没有传值的命名参数为underfined，arguments不能重写值，但命名参数可以</li>
+<li>递归时，用arguments.callee（指向拥有该对象的函数）来代替函数名，可以消除紧密耦合，但只能用于非严格模式。<br /></li>
+</ul>
+</li>
+<li>this:执行函数对象（全局时为window）</li>
+</ul>
+<h2 id="隐性转换和显性转换"><a href="#隐性转换和显性转换" class="headerlink" title="隐性转换和显性转换"></a><strong>隐性转换和显性转换</strong></h2><h3 id="强制-显性-类型转换"><a href="#强制-显性-类型转换" class="headerlink" title="强制(显性)类型转换"></a>强制(显性)类型转换</h3><p>强制类型转换主要是指通过String、Number和Boolean等构造方法手动转换成对应的字符串、数字和布尔值。</p>
+<h3 id="自动-隐性-类型转换"><a href="#自动-隐性-类型转换" class="headerlink" title="自动(隐性)类型转换"></a>自动(隐性)类型转换</h3><p>自动类型转换就是不需要人为强制的进行转换，js会自动将类型转换为需要的类型，所以该转换操作用户是感觉不到的，因此又称为隐性类型转换</p>
+<h2 id="数据的深浅拷贝"><a href="#数据的深浅拷贝" class="headerlink" title="数据的深浅拷贝"></a>数据的深浅拷贝</h2><ul>
+<li><strong>浅拷贝（Shallow Copy</strong>） 只会将对象的各个属性进行依次复制，并不会进行递归复制，也就是说只会赋值目标对象的第一层属性。</li>
+<li><strong>深拷贝(Deep Copy)</strong>不同于浅拷贝，它不只拷贝目标对象的第一层属性，而是递归拷贝目标对象的所有属性。（两个对象对应两个不同的地址，修改一个对象的属性，不会改变另一个对象的属性）</li>
+</ul>
+<h3 id="浅拷贝"><a href="#浅拷贝" class="headerlink" title="浅拷贝"></a><strong>浅拷贝</strong></h3><h4 id="赋值运算符（-）"><a href="#赋值运算符（-）" class="headerlink" title="赋值运算符（=）"></a>赋值运算符（=）</h4><p>只拷贝对象的引用值</p>
+<h4 id="首层拷贝实现"><a href="#首层拷贝实现" class="headerlink" title="首层拷贝实现"></a>首层拷贝实现</h4><p>（只有第一层是深拷贝）</p>
+<pre><code class="hljs javascript"><span class="hljs-comment">//1.Object.assign()</span>
+<span class="hljs-keyword">const</span> obj2 = <span class="hljs-built_in">Object</span>.assign(&#123;&#125;, obj1);\\ES6,拷贝的是属性值。假如源对象的属性值是一个指向对象的引用，它也只拷贝那个引用值。
+<span class="hljs-comment">//2.... 展开运算符</span>
+<span class="hljs-keyword">const</span> obj2 = [...obj1];只是对对象的第一层进行深拷贝
+<span class="hljs-comment">//3.Array.prototype.slice()</span>
+<span class="hljs-keyword">const</span> obj2 = obj1.slice();
+<span class="hljs-comment">//4.Array.prototype.concat()</span>
+<span class="hljs-keyword">const</span> obj2 = obj1.concat();</code></pre>
+<h4 id="手写一个浅拷贝"><a href="#手写一个浅拷贝" class="headerlink" title="手写一个浅拷贝"></a>手写一个浅拷贝</h4><pre><code class="hljs javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">shallowClone</span>(<span class="hljs-params">obj</span>)</span>&#123;
+    <span class="hljs-keyword">let</span> result=<span class="hljs-built_in">Array</span>.isArray(obj)?[]:&#123;&#125;
+    <span class="hljs-built_in">Object</span>.keys(obj).forEach(<span class="hljs-function"><span class="hljs-params">element</span> =&gt;</span> &#123;
+        result[element]=obj[element]
+    &#125;);
+    <span class="hljs-keyword">return</span> result;
+&#125;</code></pre>
+<h3 id="深拷贝"><a href="#深拷贝" class="headerlink" title="深拷贝(*)"></a><strong>深拷贝(*)</strong></h3><h4 id="JSON-parse-和JSON-stringify-（对目标对象有要求）"><a href="#JSON-parse-和JSON-stringify-（对目标对象有要求）" class="headerlink" title="JSON.parse()和JSON.stringify()   （对目标对象有要求）"></a>JSON.parse()和JSON.stringify()   （对目标对象有要求）</h4><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> obj2 = <span class="hljs-built_in">JSON</span>.parse(<span class="hljs-built_in">JSON</span>.stringify(obj1));</code></pre>
+<p>缺点：</p>
+<ul>
+<li>undefined、function，正则表达式类型以及 symbol 值，在序列化过程中会被忽略（出现在非数组对象的属性值中时）或者被转换成 null（出现在数组中时)；</li>
+<li>它会抛弃对象的constructor。也就是深拷贝之后，不管这个对象原来的构造函数是什么，在深拷贝之后都会变成Object；</li>
+<li>当出现循环引用时会报错</li>
+</ul>
+<h4 id="递归（真正意义上的深拷贝）"><a href="#递归（真正意义上的深拷贝）" class="headerlink" title="递归（真正意义上的深拷贝）"></a>递归（真正意义上的深拷贝）</h4><p><strong>递归中可能出现的问题：循环引用</strong></p>
+<ul>
+<li>父级引用</li>
+</ul>
+<p>这里的父级引用指的是，当对象的某个属性，正是这个对象本身，此时我们如果进行深拷贝，可能会在子元素-&gt;父对象-&gt;子元素…这个循环中一直进行，导致栈溢出。<br />解决办法:判断一个对象的字段是否引用了这个对象或这个对象的任意父级</p>
+<ul>
+<li>同级引用</li>
+</ul>
+<p>假设对象obj有a,b,c三个子对象，其中子对象c中有个属性d引用了对象obj下面的子对象a。<br />解决办法：父级的引用是一种引用，非父级的引用也是一种引用，那么只要记录下对象A中的所有对象，并与新创建的对象一一对应即可。</p>
+<h4 id="手写一个深拷贝（-）"><a href="#手写一个深拷贝（-）" class="headerlink" title="手写一个深拷贝（*）"></a>手写一个深拷贝（*）</h4><p><strong>已经处理了相关边界及循环引用问题</strong></p>
+<pre><code class="hljs javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">isObject</span>(<span class="hljs-params">obj</span>) </span>&#123; <span class="hljs-comment">//判断obj是不是一个对象，且当obj为null时原样返回而不是返回｛｝</span>
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">typeof</span> obj === <span class="hljs-string">'object'</span> &amp;&amp; obj != <span class="hljs-literal">null</span>;
+&#125;
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">deepClone</span>(<span class="hljs-params">obj, hash = new WeakMap(</span>)) </span>&#123;  <span class="hljs-comment">//hash用于解决循环引用</span>
+    <span class="hljs-keyword">if</span> (!isObject(obj)) <span class="hljs-keyword">return</span> obj;
+    <span class="hljs-keyword">if</span> (hash.has(obj)) <span class="hljs-keyword">return</span> hash.get(obj); <span class="hljs-comment">// 查hash，如果当前obj已经存在则直接取拷贝过的值</span>
+    <span class="hljs-keyword">let</span> result = <span class="hljs-built_in">Array</span>.isArray(obj) ? [] : &#123;&#125; <span class="hljs-comment">//对数组和对象进行区分</span>
+    hash.set(obj, result) <span class="hljs-comment">//obj不存在时存入hash</span>
+    <span class="hljs-built_in">Object</span>.keys(obj).forEach(<span class="hljs-function"><span class="hljs-params">element</span> =&gt;</span> &#123; <span class="hljs-comment">//遍历obj的key进行拷贝</span>
+            <span class="hljs-keyword">if</span> (isObject(obj[element])) &#123;
+                result[element] = deepClone(obj[element], hash) <span class="hljs-comment">//当key对应值仍为对象时，递归拷贝</span>
+            &#125; <span class="hljs-keyword">else</span> &#123;
+                result[element] = obj[element] <span class="hljs-comment">//为基本数据类型则直接拷贝</span>
+            &#125;
+    &#125;);
+    <span class="hljs-keyword">return</span> result;
+&#125;</code></pre>
+<p><strong>拷贝Symbol（）的情况</strong><br />将Object.keys(obj)遍历key值改变为：</p>
+<ul>
+<li>方法一：Object.getOwnPropertySymbols(…)</li>
+<li>方法二：<pre><code class="hljs javascript"><span class="hljs-built_in">Reflect</span>.ownKeys(...)
+<span class="hljs-comment">//等价于</span>
+<span class="hljs-built_in">Object</span>.getOwnPropertyNames(target).concat(<span class="hljs-built_in">Object</span>.getOwnPropertySymbols(target))</code></pre></li>
+</ul>
+<p><strong>拷贝原型链上数据的情况</strong></p>
+<ul>
+<li>for..in 进行遍历</li>
+</ul>
+<h2 id="问几个问题"><a href="#问几个问题" class="headerlink" title="问几个问题"></a><strong>问几个问题</strong></h2><h3 id="Q1-为什么基础数据类型存在栈中，而引用数据类型存在堆中呢？"><a href="#Q1-为什么基础数据类型存在栈中，而引用数据类型存在堆中呢？" class="headerlink" title="Q1:为什么基础数据类型存在栈中，而引用数据类型存在堆中呢？"></a><strong>Q1:为什么基础数据类型存在栈中，而引用数据类型存在堆中呢？</strong></h3><ul>
+<li>堆比栈大，栈比堆速度快。<br /></li>
+<li>基础数据类型比较稳定，而且相对来说占用的内存小。<br /></li>
+<li>引用数据类型大小是动态的，而且是无限的。<br /></li>
+<li>堆内存是无序存储，可以根据引用直接获取。</li>
+</ul>
+<h3 id="Q2-下面的代码会输出什么？"><a href="#Q2-下面的代码会输出什么？" class="headerlink" title="Q2:下面的代码会输出什么？"></a><strong>Q2:下面的代码会输出什么？</strong></h3><pre><code class="hljs javascript"><span class="hljs-keyword">var</span> a = &#123; <span class="hljs-attr">name</span>: <span class="hljs-string">'前端开发'</span> &#125;
+<span class="hljs-keyword">var</span> b = a;
+a = <span class="hljs-literal">null</span>;
+<span class="hljs-built_in">console</span>.log(b)</code></pre>
+<blockquote>
+<p>{ name: ‘前端开发’ }    null是基本类型，a = null之后只是把a存储在栈内存中地址改变成了基本类型null，并不会影响堆内存中的对象，所以b的值不受影响</p>
+</blockquote>
+<h3 id="Q3-从内存来看-null-和-undefined-本质的区别是什么？"><a href="#Q3-从内存来看-null-和-undefined-本质的区别是什么？" class="headerlink" title="Q3:从内存来看 null 和 undefined 本质的区别是什么？"></a><strong>Q3:</strong>从内存来看 null 和 undefined 本质的区别是什么？</h3><ul>
+<li>给一个全局变量赋值为null，相当于将这个变量的指针对象以及值清空，如果是给对象的属性 赋值为null，或者局部变量赋值为null,相当于给这个属性分配了一块空的内存，然后值为null， JS会回收全局变量为null的对象。</li>
+<li>给一个全局变量赋值为undefined，相当于将这个对象的值清空，但是这个对象依旧存在,如果是给对象的属性赋值 为undefined，说明这个值为空值</li>
+</ul>
+<h3 id="Q4-JS判断一下数据类型？"><a href="#Q4-JS判断一下数据类型？" class="headerlink" title="Q4:JS判断一下数据类型？"></a><strong>Q4:JS判断一下数据类型？</strong></h3><h4 id="typeof-检测基本数据类型的最佳选择"><a href="#typeof-检测基本数据类型的最佳选择" class="headerlink" title="typeof (检测基本数据类型的最佳选择)"></a>typeof (检测基本数据类型的最佳选择)</h4><ul>
+<li>对于基本类型，除 null 以外，均可以返回正确的结果。<br /></li>
+<li>对于引用类型，除 function 以外，一律返回 object。<br /></li>
+<li>对于 null ，返回 object。<br /></li>
+<li>对于 function 返回 function。<br /></li>
+</ul>
+<h4 id="instanceof-判断-A-是否为-B-的实例"><a href="#instanceof-判断-A-是否为-B-的实例" class="headerlink" title="instanceof (判断 A 是否为 B 的实例)"></a>instanceof (判断 A 是否为 B 的实例)</h4><ul>
+<li>A instanceof B，如果 A 是 B 的实例，则返回 true,否则返回 false<br /></li>
+<li>instanceof 只能用来判断两个对象是否属于实例关系， 而不能判断一个对象实例具体属于哪种类型，不同环境下不是同一个构造函数<br /></li>
+<li>Array.isArray() 方法 。该方法用以确认某个对象本身是否为 Array 类型，而不区分该对象在哪个环境中创建<br /></li>
+</ul>
+<h4 id="constructor-构造函数"><a href="#constructor-构造函数" class="headerlink" title="constructor (构造函数)"></a>constructor (构造函数)</h4><pre><code class="hljs javascript">[ ].constructor == <span class="hljs-built_in">Array</span>   <span class="hljs-literal">true</span>   
+<span class="hljs-string">" "</span>.constructor == <span class="hljs-built_in">String</span>   <span class="hljs-literal">true</span></code></pre>
+
+<ul>
+<li>null 和 undefined 是无效的对象，因此是不会有 constructor 存在的，这两种类型的数据需要通过其他方式来判断。<br /></li>
+<li>使用它是不安全的，因为contructor的指向是可以改变的<br/></li>
+</ul>
+<h4 id="使用Object-prototype-toString-call-目前最优解"><a href="#使用Object-prototype-toString-call-目前最优解" class="headerlink" title="使用Object.prototype.toString.call(目前最优解)"></a>使用Object.prototype.toString.call(目前最优解)</h4><p>能够生成固定的返回格式，进行截取得到数据类型，目前基本和引用类型全部支持</p>
+<pre><code class="hljs javascript"><span class="hljs-built_in">Object</span>.prototype.toString.call(<span class="hljs-string">'111'</span>)        <span class="hljs-string">"[object String]"</span></code></pre>
+<h4 id="想了两种取type的方法"><a href="#想了两种取type的方法" class="headerlink" title="想了两种取type的方法"></a>想了两种取type的方法</h4><pre><code class="hljs javascript"><span class="hljs-keyword">let</span> type = <span class="hljs-built_in">Object</span>.prototype.toString.call(<span class="hljs-string">'111'</span>) 
+<span class="hljs-keyword">let</span> name = type.slice(<span class="hljs-number">8</span>,<span class="hljs-built_in">Object</span>.prototype.toString.call(<span class="hljs-string">'111'</span>).length<span class="hljs-number">-1</span>)<span class="hljs-comment">//截取 </span>
+<span class="hljs-keyword">let</span> name = type.match(<span class="hljs-regexp">/^\[object (\w+)\]$/</span>)[<span class="hljs-number">1</span>]<span class="hljs-comment">//正则</span></code></pre>
+<h3 id="Q5-什么样的数据值在判断时会被转换为false？"><a href="#Q5-什么样的数据值在判断时会被转换为false？" class="headerlink" title="Q5:什么样的数据值在判断时会被转换为false？"></a><strong>Q5:什么样的数据值在判断时会被转换为false？</strong></h3><p>我们使用 Boolean 函数将类型转换成布尔类型，在 JavaScript 中，只有 6 种值可以被转换成 false，其他都会被转换成 true。</p>
+<pre><code class="hljs javascript"><span class="hljs-built_in">console</span>.log(<span class="hljs-built_in">Boolean</span>()) <span class="hljs-comment">// false</span>
+<span class="hljs-built_in">console</span>.log(<span class="hljs-built_in">Boolean</span>(<span class="hljs-literal">false</span>)) <span class="hljs-comment">// false</span>
+<span class="hljs-built_in">console</span>.log(<span class="hljs-built_in">Boolean</span>(<span class="hljs-literal">undefined</span>)) <span class="hljs-comment">// false</span>
+<span class="hljs-built_in">console</span>.log(<span class="hljs-built_in">Boolean</span>(<span class="hljs-literal">null</span>)) <span class="hljs-comment">// false</span>
+<span class="hljs-built_in">console</span>.log(<span class="hljs-built_in">Boolean</span>(+<span class="hljs-number">0</span>)) <span class="hljs-comment">// false  </span>
+<span class="hljs-built_in">console</span>.log(<span class="hljs-built_in">Boolean</span>(<span class="hljs-number">-0</span>)) <span class="hljs-comment">// false</span>
+<span class="hljs-built_in">console</span>.log(<span class="hljs-built_in">Boolean</span>(<span class="hljs-literal">NaN</span>)) <span class="hljs-comment">// false</span>
+<span class="hljs-built_in">console</span>.log(<span class="hljs-built_in">Boolean</span>(<span class="hljs-string">""</span>)) <span class="hljs-comment">// false</span></code></pre>
+<h3 id="Q6-函数中的arguments是数组吗？若不是，如何将它转化为真正的数组？"><a href="#Q6-函数中的arguments是数组吗？若不是，如何将它转化为真正的数组？" class="headerlink" title="Q6:函数中的arguments是数组吗？若不是，如何将它转化为真正的数组？"></a><strong>Q6:函数中的arguments是数组吗？若不是，如何将它转化为真正的数组？</strong></h3><pre><code class="hljs javascript"><span class="hljs-keyword">typeof</span> <span class="hljs-built_in">arguments</span>==<span class="hljs-string">"object"</span>
+<span class="hljs-built_in">Object</span>.prototype.toString.call(<span class="hljs-built_in">arguments</span>)==<span class="hljs-string">"[object Arguments]"</span></code></pre>
+<p>不是，是类数组对象</p>
+<pre><code class="hljs javascript"><span class="hljs-keyword">var</span> arrayLike = &#123;<span class="hljs-number">0</span>: <span class="hljs-string">'name'</span>, <span class="hljs-number">1</span>: <span class="hljs-string">'age'</span>, <span class="hljs-number">2</span>: <span class="hljs-string">'sex'</span>, <span class="hljs-attr">length</span>: <span class="hljs-number">3</span> &#125;     
+<span class="hljs-comment">// 1. slice     </span>
+<span class="hljs-built_in">Array</span>.prototype.slice.call(arrayLike); <span class="hljs-comment">// ["name", "age", "sex"]     </span>
+<span class="hljs-comment">// 2. splice     </span>
+<span class="hljs-built_in">Array</span>.prototype.splice.call(arrayLike, <span class="hljs-number">0</span>); <span class="hljs-comment">// ["name", "age", "sex"]      </span>
+<span class="hljs-comment">// 3. ES6 Array.from     </span>
+<span class="hljs-built_in">Array</span>.from(arrayLike); <span class="hljs-comment">// ["name", "age", "sex"]      </span>
+<span class="hljs-comment">// 4. apply     </span>
+<span class="hljs-built_in">Array</span>.prototype.concat.apply([], arrayLike) <span class="hljs-comment">// ["name", "age", "sex"]   </span>
+<span class="hljs-comment">// 5. ES6扩展运算符     </span>
+[...arrayLike] <span class="hljs-comment">// ["name", "age", "sex"]</span></code></pre>
+<h3 id="Q7-函数传参数是按值还是引用-数据类型或者对象类型都一样吗？"><a href="#Q7-函数传参数是按值还是引用-数据类型或者对象类型都一样吗？" class="headerlink" title="Q7:函数传参数是按值还是引用?数据类型或者对象类型都一样吗？"></a><strong>Q7:函数传参数是按值还是引用?数据类型或者对象类型都一样吗？</strong></h3><p>ECMAScript中所有函数的参数都是按<strong>值</strong>来传递的，把函数外部的值复制给函数内部的参数，函数只能操作对象的属性和值，而不能操作对象本身。</p>
+<ul>
+<li>原始值：只是把变量里的值传递给参数，之后参数和这个变量互不影响，这个很好理解，不再赘述。</li>
+<li>引用值：对象变量里面的值是这个对象在堆内存中的内存地址，因此它传递的值也就是这个内存地址，这也就是为什么函数内部对这个参数的修改会体现在外部的原因了，因为它们都指向同一个对象。</li>
+</ul>
+<h2 id="巨人的肩膀"><a href="#巨人的肩膀" class="headerlink" title="巨人的肩膀"></a><strong>巨人的肩膀</strong></h2><ul>
+<li><a href="https://book.douban.com/subject/10546125/" target="_blank" rel="noopener"><strong>《JavaScript高级程序设计(第3版)》</strong></a><br /></li>
+<li><a href="https://es6.ruanyifeng.com/" target="_blank" rel="noopener"><strong>《ECMAScript 6 入门》</strong></a></li>
+<li><a href="https://juejin.im/post/5e7d7670f265da797f4afa84" target="_blank" rel="noopener"><strong>JavaScript深入之头疼的类型转换(上)</strong></a></li>
+<li><a href="https://segmentfault.com/a/1190000015042902" target="_blank" rel="noopener"><strong>「JavaScript」带你彻底搞清楚深拷贝、浅拷贝和循环引用</strong></a></li>
+<li><a href="https://github.com/axuebin/articles/issues/20" target="_blank" rel="noopener"><strong>JavaScript基础心法——深浅拷贝</strong></a></li>
+<li><a href="https://muyiy.cn/blog/4/4.1.html" target="_blank" rel="noopener"><strong>木易杨前端进阶-第 4 期：深浅拷贝原理</strong></a></li>
+</ul>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a><strong>最后</strong></h2><p>欢迎纠错，看到会及时修改哒！❤<br>温故而知新，希望我们都可以保持本心，念念不忘，必有回响。</p>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E6%8A%80%E6%9C%AFblog/">技术blog</a>
+                    
+                      <a class="hover-with-bg" href="/categories/%E6%8A%80%E6%9C%AFblog/JS/">JS</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/JS/">JS</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" target="_blank" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/07/20/technology/css-basic/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">一文梳理CSS必会知识点</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/2020/07/14/technology/js-basic2/">
+                        <span class="hidden-mobile">从头梳理JS基础（二）函数执行的整个过程</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+    <!-- APlayer 音乐播放器 -->
+    <div id="aplayer"></div>
+    <script defer src="https://cdn.staticfile.org/aplayer/1.10.1/APlayer.min.js" ></script>
+<link  rel="stylesheet" href="https://cdn.staticfile.org/aplayer/1.10.1/APlayer.min.css" />
+<script type="text/javascript">
+  var oldLoadAp = window.onload;
+  window.onload = function () {
+    oldLoadAp && oldLoadAp();
+
+    new APlayer({
+      container: document.getElementById('aplayer'),
+      fixed: true,
+      autoplay: 'false' === 'true',
+      loop: 'all',
+      order: 'random',
+      theme: '#b7daff',
+      preload: 'none',
+      audio: [{"name":"海底","artist":"三块木头","url":"/songs/三块木头 - 海底.mp3","cover":"/img/cover.png"},{"name":"ハレハレヤ（朗朗晴天）","artist":"猫瑾","url":"/songs/猫瑾 - ハレハレヤ（朗朗晴天）.mp3","cover":"/img/cover.png"},{"name":"ぼくら（城镇青年ED）","artist":"玖肆仟","url":"/songs/玖肆仟 - ぼくら（城镇青年ED）.mp3","cover":"/img/cover.png"}]
+    });
+  }
+</script>
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <span>&</span>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+      <i class="iconfont icon-love"></i>
+      <span>by 芋头</span>
+      <!-- <span id="hitokoto">:D 获取中...</span> -->
+    </div>
+    <div>
+      <span id="timeDate">载入天数...</span>
+      <span id="times">载入时分秒...</span>
+    </div>
+    
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/main.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: 'article.markdown-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "从头梳理JS基础（一）数据类型及深浅拷贝&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+  // fetch('https://v1.hitokoto.cn')
+  //   .then(response => response.json())
+  //   .then(data => {
+  //     const hitokoto = document.getElementById('hitokoto')
+  //     hitokoto.innerText = data.hitokoto
+  //   })
+  //   .catch(console.error)
+  var now = new Date();
+  function createtime() {
+    var grt = new Date("07/28/2020 00:00:00");//此处修改你的建站时间或者网站上线时间
+    now.setTime(now.getTime() + 250);
+    days = (now - grt) / 1000 / 60 / 60 / 24;
+    dnum = Math.floor(days);
+    hours = (now - grt) / 1000 / 60 / 60 - (24 * dnum);
+    hnum = Math.floor(hours);
+    if (String(hnum).length == 1) {
+      hnum = "0" + hnum;
+    }
+    minutes = (now - grt) / 1000 / 60 - (24 * 60 * dnum) - (60 * hnum);
+    mnum = Math.floor(minutes);
+    if (String(mnum).length == 1) {
+      mnum = "0" + mnum;
+    }
+    seconds = (now - grt) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+    snum = Math.round(seconds);
+    if (String(snum).length == 1) {
+      snum = "0" + snum;
+    }
+    document.getElementById("timeDate").innerHTML = "按时长大的第&nbsp" + dnum + "&nbsp天";
+    document.getElementById("times").innerHTML = hnum + "&nbsp小时&nbsp" + mnum + "&nbsp分&nbsp" + snum + "&nbsp秒";
+  }
+  setInterval("createtime()", 250);
+</script>
+
+</body>
+</html>
